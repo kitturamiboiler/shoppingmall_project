@@ -12,6 +12,7 @@
   <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-cart3"></i> 장바구니</h2>
 
   <c:choose>
+    <%-- 장바구니가 비어있는 경우 --%>
     <c:when test="${empty cartItems}">
       <div class="card shadow-sm border-0 py-5 text-center">
         <div class="card-body">
@@ -27,10 +28,11 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="table-dark">
             <tr>
-              <th class="px-4 py-3" style="width: 50%">상품 정보</th>
+              <th class="px-4 py-3" style="width: 45%">상품 정보</th>
               <th class="text-center py-3">단가</th>
-              <th class="text-center py-3">수량</th>
-              <th class="text-end px-4 py-3">소계</th>
+              <th class="text-center py-3" style="width: 150px;">수량</th>
+              <th class="text-end py-3">소계</th>
+              <th class="text-center py-3">관리</th>
             </tr>
             </thead>
             <tbody>
@@ -49,12 +51,26 @@
                 </td>
                 <td class="text-center text-secondary"><c:out value="${item.key.price}"/> P</td>
                 <td class="text-center">
-                                    <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
-                                        ${item.value} 개
-                                    </span>
+                    <%-- 수량 업데이트 --%>
+                  <form action="/cart/update.do" method="post" class="d-flex align-items-center justify-content-center">
+                    <input type="hidden" name="productId" value="${item.key.id}">
+                    <input type="number" name="quantity" value="${item.value}" min="1"
+                           class="form-control form-control-sm text-center me-1" style="width: 60px;">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">변경</button>
+                  </form>
                 </td>
-                <td class="text-end px-4 fw-bold text-primary">
+                <td class="text-end fw-bold text-primary">
                   <c:out value="${item.key.price * item.value}"/> P
+                </td>
+                <td class="text-center">
+                    <%-- 상품 삭제 Form --%>
+                  <form action="/cart/delete.do" method="post">
+                    <input type="hidden" name="productId" value="${item.key.id}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('이 상품을 장바구니에서 삭제하시겠습니까?');">
+                      <i class="bi bi-trash"></i> 삭제
+                    </button>
+                  </form>
                 </td>
               </tr>
             </c:forEach>

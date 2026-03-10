@@ -14,4 +14,5 @@ public interface UserService {
 
     User doLogin(String userId, String userPassword);
 
+    void updateUserPoint(String userId, int pointAmount, String reason);
 }
