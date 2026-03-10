@@ -1,4 +1,4 @@
-package com.nhnacadmey.shop.product.repository;
+package com.nhnacadmey.shop.product;
 
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
 import com.nhnacademy.shoppingmall.product.domain.Product;

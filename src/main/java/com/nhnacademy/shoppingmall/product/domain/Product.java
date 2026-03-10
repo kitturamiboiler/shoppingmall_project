@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Getter
 @EqualsAndHashCode
 public class Product {
-    private final Integer id;             // id
+    private Integer id;             // id
     private final String category;        // category
     private final String title;           // title (상품명)
     private final int price;              // price
@@ -43,7 +43,9 @@ public class Product {
         this.vendor = vendor;
         this.createdAt = createdAt;
     }
-
+    public void setId(Integer id) {
+        this.id = id;
+    }
     public String getResolvedImageUrl() {
         return "/resources/images/products/" + this.id + ".jpg";
     }
