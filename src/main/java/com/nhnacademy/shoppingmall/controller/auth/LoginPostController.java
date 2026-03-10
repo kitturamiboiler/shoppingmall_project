@@ -21,15 +21,17 @@ public class LoginPostController implements BaseController {
         //todo#13-2 로그인 구현, session은 60분동안 유지됩니다.
         String userId = req.getParameter("user_id");
         String userPw = req.getParameter("user_password");
+
         try {
             User user = userService.doLogin(userId, userPw);
             HttpSession httpSession = req.getSession(true);
             httpSession.setAttribute("user", user);
             httpSession.setMaxInactiveInterval(3600);
-            return "redirect:/index.do";
+            return "redirect:/product/list.do";
+
         } catch (Exception e) {
-            req.setAttribute("error", "아이디 비번 잘못 입력");
-            return "shop/main/index";
+            req.setAttribute("error", "아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+            return "shop/login/login_form";
         }
     }
 }
