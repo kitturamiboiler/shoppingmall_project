@@ -12,7 +12,6 @@ import java.io.IOException;
 
 @Slf4j
 
-@WebFilter(value = "/")
 @WebFilter(urlPatterns = "/")
 public class WelcomePageFilter extends HttpFilter {
 
