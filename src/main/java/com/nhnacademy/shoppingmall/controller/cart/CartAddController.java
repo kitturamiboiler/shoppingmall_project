@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @RequestMapping(method = RequestMapping.Method.POST, value = "/cart/add.do")
-public class CartController implements BaseController {
+public class CartAddController implements BaseController {
     private final ProductService productService = new ProductServiceImpl(new ProductRepositoryImpl());
 
     @Override

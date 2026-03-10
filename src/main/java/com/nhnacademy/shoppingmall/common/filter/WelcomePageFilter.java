@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-
+@WebFilter(urlPatterns = "/")
 public class WelcomePageFilter extends HttpFilter {
 
     @Override
