@@ -5,11 +5,13 @@ import com.nhnacademy.shoppingmall.user.exception.UserNotFoundException;
 import com.nhnacademy.shoppingmall.user.service.UserService;
 import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -41,6 +43,7 @@ public class UserServiceImpl implements UserService {
         userRepository.update(user);
     }
 
+
     @Override
     public void deleteUser(String userId) {
         //todo#4-4 회원삭제
@@ -59,5 +62,16 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.updateLatestLoginAtByUserId(userId, LocalDateTime.now());
         return userOptional.get();
+    }
+    @Override
+    public void updateUserPoint(String userId, int amount, String reason) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        if (amount < 0 && user.getUserPoint() + amount < 0) {
+            throw new RuntimeException("잔여 포인트가 부족합니다.");
+        }
+        user.setUserPoint(user.getUserPoint() + amount);
+        userRepository.update(user);
+        log.info("포인트 변동 기록: 사용자={}, 변동액={}, 사유={}", userId, amount, reason);
     }
 }
