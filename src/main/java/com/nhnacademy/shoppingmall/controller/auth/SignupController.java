@@ -13,6 +13,11 @@ public class SignupController implements BaseController {
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
+        HttpSession httpSession = req.getSession(false);
+        if (Objects.nonNull(httpSession)) {
+            httpSession.invalidate();
+        }
+
         return "shop/signup/signup_form";
     }
 }
