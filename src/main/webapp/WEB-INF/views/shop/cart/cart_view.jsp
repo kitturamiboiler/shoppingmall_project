@@ -79,15 +79,14 @@
         </div>
         <div class="card-footer bg-white p-4 border-top-0">
           <div class="row align-items-center">
-            <div class="col-md-6">
-              <a href="/product/list.do" class="btn btn-link text-decoration-none text-secondary">
-                <i class="bi bi-arrow-left"></i> 쇼핑 계속하기
-              </a>
-            </div>
-            <div class="col-md-6 text-end">
+            <div class="col-md-6 d-flex flex-column align-items-end">
               <h5 class="text-muted mb-1 small">최종 결제 금액</h5>
               <h3 class="fw-bold text-danger mb-3">${totalPrice} P</h3>
-              <button type="button" class="btn btn-success btn-lg px-5 shadow-sm">주문하기</button>
+              <form action="/order/post.do" method="post" class="d-inline-block">
+                <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                  주문하기
+                </button>
+              </form>
             </div>
           </div>
         </div>
