@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @Slf4j
 
-@WebFilter(urlPatterns = "/")
+@WebFilter(value = "/")
 public class WelcomePageFilter extends HttpFilter {
 
     @Override
