@@ -21,7 +21,7 @@
 
     <div class="d-grid gap-2 d-md-block">
       <a href="/index.do" class="btn btn-primary btn-lg px-5">홈으로 돌아가기</a>
-      <a href="/mypage.do" class="btn btn-outline-secondary btn-lg px-5">주문 내역 보기</a>
+      <a href="/mypage/index.do" class="btn btn-outline-secondary btn-lg px-5">주문 내역 보기</a>
     </div>
   </div>
 </div>
