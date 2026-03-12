@@ -1,18 +1,11 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: chosun-nhn13
-  Date: 26. 3. 10.
-  Time: 오전 10:26
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" session="false" trimDirectiveWhitespaces="true" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" session="true" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <div class="container mt-5 mb-5">
-  <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-cart3"></i> 장바구니</h2>
+  <h2 class="mb-4 fw-bold text-dark"><i class="bi bi-cart3 me-2"></i>장바구니</h2>
 
   <c:choose>
-    <%-- 장바구니가 비어있는 경우 --%>
     <c:when test="${empty cartItems}">
       <div class="card shadow-sm border-0 py-5 text-center">
         <div class="card-body">
@@ -49,9 +42,8 @@
                     </div>
                   </div>
                 </td>
-                <td class="text-center text-secondary"><c:out value="${item.key.price}"/> P</td>
+                <td class="text-center"><fmt:formatNumber value="${item.key.price}" type="number"/> P</td>
                 <td class="text-center">
-                    <%-- 수량 업데이트 --%>
                   <form action="/cart/update.do" method="post" class="d-flex align-items-center justify-content-center">
                     <input type="hidden" name="productId" value="${item.key.id}">
                     <input type="number" name="quantity" value="${item.value}" min="1"
@@ -60,14 +52,12 @@
                   </form>
                 </td>
                 <td class="text-end fw-bold text-primary">
-                  <c:out value="${item.key.price * item.value}"/> P
+                  <fmt:formatNumber value="${item.key.price * item.value}" type="number"/> P
                 </td>
                 <td class="text-center">
-                    <%-- 상품 삭제 Form --%>
                   <form action="/cart/delete.do" method="post">
                     <input type="hidden" name="productId" value="${item.key.id}">
-                    <button type="submit" class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('이 상품을 장바구니에서 삭제하시겠습니까?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('삭제하시겠습니까?');">
                       <i class="bi bi-trash"></i> 삭제
                     </button>
                   </form>
@@ -77,13 +67,22 @@
             </tbody>
           </table>
         </div>
-        <div class="card-footer bg-white p-4 border-top-0">
-          <div class="row align-items-center">
-            <div class="col-md-6 d-flex flex-column align-items-end">
-              <h5 class="text-muted mb-1 small">최종 결제 금액</h5>
-              <h3 class="fw-bold text-danger mb-3">${totalPrice} P</h3>
-              <form action="/order/post.do" method="post" class="d-inline-block">
-                <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+
+        <div class="card-footer bg-white p-4 border-top">
+          <div class="d-flex justify-content-between align-items-center">
+            <a href="/product/list.do" class="btn btn-link text-decoration-none text-muted fw-bold">
+              <i class="bi bi-arrow-left me-1"></i> 상품 페이지로 돌아가기
+            </a>
+
+            <div class="d-flex align-items-center gap-4">
+              <div class="text-end">
+                <span class="text-muted small d-block mb-1">최종 결제 금액</span>
+                <h3 class="fw-bold text-danger mb-0">
+                  <fmt:formatNumber value="${totalPrice}" type="number"/> <small>P</small>
+                </h3>
+              </div>
+              <form action="/order/post.do" method="post">
+                <button type="submit" class="btn btn-success btn-lg px-5 py-3 shadow-sm fw-bold">
                   주문하기
                 </button>
               </form>

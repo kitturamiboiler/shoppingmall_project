@@ -11,7 +11,12 @@ public interface ProductRepository {
     // 상품 조회
     Product findById(int id);
 
-     List<Product> findAll(int offset, int limit);
-     int countAll();
+    List<Product> findAllCategory(String category, int offset, int limit);
+    // 카테고리 별 상품 검색
+    List<String> getProductsByCategory();
+    // 제목 검색
+    List<Product> getProductsByTitle(String title, int offset, int limit);
+    List<Product> findAll(int offset, int limit);
+    int countAll();
     void updateStock(int productId, int quantity);
 }

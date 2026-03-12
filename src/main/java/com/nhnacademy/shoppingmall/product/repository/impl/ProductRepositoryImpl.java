@@ -1,11 +1,15 @@
 package com.nhnacademy.shoppingmall.product.repository.impl;
 
+import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.repository.ProductRepository;
+import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -140,5 +144,82 @@ public class ProductRepositoryImpl implements ProductRepository {
         } catch (SQLException e) {
             throw new RuntimeException("재고 업데이트 중 DB 오류 발생", e);
         }
+    }
+    @Override
+    public List<String> getProductsByCategory() {
+        String sql = "Select distinct category from products where category is not null order by category asc";
+        List<String> categories = new ArrayList<>();
+        Connection connection = DbConnectionThreadLocal.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                categories.add(rs.getString("category"));
+            }
+        } catch (SQLException e) {
+            DbConnectionThreadLocal.setSqlError(true);
+            throw new RuntimeException("카테고리 조회 중 오류 발생", e);
+        }
+        return categories;
+    }
+
+    @Override
+    public List<Product> findAllCategory(String category, int offset, int limit) {
+        String sql = "Select * from products where category =? order by created_at desc limit ? offset ?";
+        List<Product> productList = new ArrayList<>();
+        Connection connection = DbConnectionThreadLocal.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, category);
+            ps.setInt(2, limit);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while(rs.next()) {
+                    productList.add(new Product(
+                            rs.getInt("id"),
+                            rs.getString("category"),
+                            rs.getString("title"),
+                            rs.getInt("price"),
+                            rs.getInt("quantity"),
+                            rs.getString("ean"),
+                            rs.getDouble("rating"),
+                            rs.getString("vendor"),
+                            rs.getTimestamp("created_at").toLocalDateTime()
+                    ));
+                }
+            }
+         } catch (SQLException e) {
+            DbConnectionThreadLocal.setSqlError(true);
+            throw new RuntimeException("카테고리별 상품 조회 중 오류 발생", e);
+        }
+        return productList;
+    }
+    @Override
+    public List<Product> getProductsByTitle(String title, int offset, int limit) {
+        String sql = "select * from products where title like ? order by created_at desc limit ? offset ?";
+        List<Product> productList = new ArrayList<>();
+        Connection connection = DbConnectionThreadLocal.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, "%" + title + "%");
+            ps.setInt(2, limit);
+            ps.setInt(3, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while(rs.next()) {
+                    productList.add(new Product(
+                            rs.getInt("id"),
+                            rs.getString("category"),
+                            rs.getString("title"),
+                            rs.getInt("price"),
+                            rs.getInt("quantity"),
+                            rs.getString("ean"),
+                            rs.getDouble("rating"),
+                            rs.getString("vendor"),
+                            rs.getTimestamp("created_at").toLocalDateTime()
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            DbConnectionThreadLocal.setSqlError(true);
+            throw new RuntimeException("상품명 검색 중 오류 발생", e);
+        }
+        return productList;
     }
 }

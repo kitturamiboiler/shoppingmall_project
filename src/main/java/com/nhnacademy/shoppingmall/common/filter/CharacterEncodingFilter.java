@@ -22,6 +22,7 @@ public class CharacterEncodingFilter  implements Filter {
         //@WebFilter(initParams = {@WebInitParam(name = "encoding",value = "UTF-8")})
         servletRequest.setCharacterEncoding(encoding);
         servletResponse.setCharacterEncoding(encoding);
+        servletResponse.setContentType("text/html; charset=" + encoding);
         filterChain.doFilter(servletRequest, servletResponse);
     }
     @Override

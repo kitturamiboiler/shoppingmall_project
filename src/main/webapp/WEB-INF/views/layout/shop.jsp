@@ -1,9 +1,6 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" session="false" trimDirectiveWhitespaces="true" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" session="true" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<%@ taglib prefix="x" uri="jakarta.tags.xml" %>
-<%@ taglib prefix="sql" uri="jakarta.tags.sql" %>
 
 <!doctype html>
 <html lang="ko">
@@ -13,70 +10,111 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <title>nhn아카데미 shopping mall</title>
+    <title>NHN Academy Shopping Mall</title>
+    <style>
+        .search-input { border: 2px solid #0074e9 !important; }
+        .nav-link { color: #333 !important; font-weight: 500; }
+        .nav-link:hover { color: #0074e9 !important; }
+        .admin-link { color: #dc3545 !important; font-weight: bold; }
+        .user-id-tag { font-size: 0.9rem; color: #666; }
+        .btn-success { background-color: #28a745 !important; border: none; }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
 <div class="mainContainer">
-    <header class="p-3 bg-dark text-white">
+    <header class="p-3 bg-white border-bottom shadow-sm">
         <div class="container">
-            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <div class="row align-items-center">
+                <div class="col-lg-3">
+                    <a href="/index.do" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                        <i class="bi bi-shop2 text-primary me-2" style="font-size: 2.5rem;"></i>
+                        <span class="fs-4 fw-bold">NHN-SHOP</span>
+                    </a>
+                </div>
 
-                <a href="/index.do" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                    <i class="bi bi-shop me-2" style="font-size: 2rem;"></i>
-                </a>
-
-                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="/index.do" class="nav-link px-2 text-white">Home</a></li>
-                    <li><a href="/mypage/index.do" class="nav-link px-2 text-white">마이페이지</a></li>
-                    <li>
-                        <a href="/cart.do" class="nav-link px-2 text-white position-relative">
-                            장바구니
-                            <c:if test="${not empty sessionScope.cart and sessionScope.cart.totalItemCount > 0}">
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                            ${sessionScope.cart.totalItemCount}
+                <div class="col-lg-9">
+                    <div class="d-flex justify-content-end mb-2">
+                        <c:choose>
+                            <c:when test="${not empty sessionScope.user}">
+                                <div class="d-flex align-items-center user-id-tag">
+                                    <span class="fw-bold me-2">
+                                        <i class="bi bi-person-circle text-primary"></i>
+                                        <span class="text-primary">${sessionScope.user.userId}</span>님 환영합니다
                                     </span>
+                                    <a class="btn btn-sm btn-outline-secondary py-0" href="/logout.do">로그아웃</a>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div>
+                                    <a class="btn btn-sm btn-outline-primary me-2" href="/login.do">로그인</a>
+                                    <a class="btn btn-sm btn-primary" href="/signup.do">회원가입</a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end gap-3">
+                        <ul class="nav mb-2 justify-content-center mb-md-0">
+                            <li><a href="/index.do" class="nav-link px-3">Home</a></li>
+
+                            <c:choose>
+                                <c:when test="${not empty sessionScope.user and sessionScope.user.userAuth.name() eq 'ROLE_ADMIN'}">
+                                    <li><a href="/admin/dashboard.do" class="nav-link px-3 admin-link">관리자 페이지</a></li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li><a href="/mypage/index.do" class="nav-link px-3">마이페이지</a></li>
+                                </c:otherwise>
+                            </c:choose>
+
+                            <li>
+                                <a href="/cart.do" class="nav-link px-3 position-relative">
+                                    <i class="bi bi-cart3"></i> 장바구니
+                                    <c:if test="${not empty sessionScope.cart and sessionScope.cart.totalItemCount > 0}">
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                                ${sessionScope.cart.totalItemCount}
+                                        </span>
+                                    </c:if>
+                                </a>
+                            </li>
+
+                            <c:if test="${not empty sessionScope.user}">
+                                <li>
+                                    <div class="nav-link px-3 text-primary fw-bold" style="cursor: default;">
+                                        <i class="bi bi-coin me-1"></i>
+                                        <fmt:formatNumber value="${sessionScope.user.userPoint}" type="number" />P
+                                    </div>
+                                </li>
                             </c:if>
-                        </a>
-                    </li>
-                </ul>
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-                    <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search">
-                </form>
-                <div class="text-end">
-                    <c:choose>
-                        <c:when test="${not empty sessionScope.user}">
-                            <span class="me-3 fw-bold text-warning">
-                                    <i class="bi bi-person-circle"></i> ${sessionScope.user.userName}님
-                                </span>
-                            <a class="btn btn-outline-light me-2" href="/logout.do">로그아웃</a>
-                        </c:when>
-                        <c:otherwise>
-                            <a class="btn btn-outline-light me-2" href="/login.do">로그인</a>
-                            <a class="btn btn-warning" href="/signup.do">회원가입</a>
-                        </c:otherwise>
-                    </c:choose>
+                        </ul>
+
+                        <form action="/index.do" method="get" class="input-group" style="width: 320px;">
+                            <input type="search" name="searchKeyword" class="form-control search-input"
+                                   placeholder="상품 검색" value="${param.searchKeyword}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <main>
-        <div class="album py-5 bg-light" style="min-height: 70vh;">
+        <div class="py-5" style="min-height: 75vh;">
             <div class="container">
                 <jsp:include page="${layout_content_holder}" />
             </div>
         </div>
     </main>
 
-    <footer class="text-muted py-5 border-top">
+    <footer class="text-muted py-5 border-top bg-white">
         <div class="container text-center">
-            <p class="mb-1">shoppingmall example is &copy; nhnacademy.com</p>
-            <p><a href="#">Back to top</a></p>
+            <p class="mb-1">© 2026 NHN Academy Shopping Mall. Built for your success.</p>
+            <p><a href="#" class="text-decoration-none text-primary">Back to top</a></p>
         </div>
     </footer>
-
 </div>
-
 </body>
 </html>

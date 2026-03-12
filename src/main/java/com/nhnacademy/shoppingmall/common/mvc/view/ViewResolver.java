@@ -9,7 +9,7 @@ public class ViewResolver {
     public static final String DEFAULT_POSTFIX=".jsp";
     public static final String REDIRECT_PREFIX="redirect:";
     public static final String DEFAULT_SHOP_LAYOUT="/WEB-INF/views/layout/shop.jsp";
-    public static final String DEFAULT_ADMIN_LAYOUT="/WEB-INF/views/layout/admin.jsp";
+    public static final String DEFAULT_ADMIN_LAYOUT="/WEB-INF/views/shop/admin/dashboard.jsp";
     public static final String LAYOUT_CONTENT_HOLDER = "layout_content_holder";
 
     private final String prefix;

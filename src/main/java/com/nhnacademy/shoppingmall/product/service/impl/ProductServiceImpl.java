@@ -16,6 +16,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
+
     @Override
     public Product getProduct(int id) {
         Product product = productRepository.findById(id);
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
         }
         return product;
     }
+
     @Override
     public Page<Product> getProductPage(int page) {
         int safePage = Math.max(1, page);
@@ -31,19 +33,41 @@ public class ProductServiceImpl implements ProductService {
         if (totalCount == 0) {
             return new Page<>(Collections.emptyList(), totalCount);
         }
-        int totalPages = (int)Math.ceil((double) totalCount / PAGE_SIZE);
+        int totalPages = (int) Math.ceil((double) totalCount / PAGE_SIZE);
         if (safePage > totalPages) {
             safePage = totalPages;
         }
-        int offset = (safePage-1) * PAGE_SIZE;
+        int offset = (safePage - 1) * PAGE_SIZE;
         List<Product> content = productRepository.findAll(offset, PAGE_SIZE);
         return new Page<>(content, totalCount);
     }
+
     @Override
     public void saveProduct(Product product) {
         int result = productRepository.save(product);
         if (result < 1) {
             throw new RuntimeException("상품 등록 실패");
         }
+    }
+
+    @Override
+    public List<String> getAllCategories() {
+        return productRepository.getProductsByCategory();
+    }
+
+    @Override
+    public List<Product> getProductsByCategory(String category, int offset, int limit) {
+        if (category == null || category.trim().isEmpty() || category.equals("ALL")) {
+            return productRepository.findAll(offset, limit);
+        }
+        return productRepository.findAllCategory(category, offset, limit);
+    }
+
+    @Override
+    public List<Product> getProductsByTitle(String title, int offset, int limit) {
+        if (title == null || title.trim().isEmpty()) {
+            return productRepository.findAll(offset, limit);
+        }
+        return productRepository.findAllCategory(title, offset, limit);
     }
 }

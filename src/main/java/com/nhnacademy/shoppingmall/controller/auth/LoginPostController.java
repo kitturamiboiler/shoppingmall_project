@@ -27,7 +27,7 @@ public class LoginPostController implements BaseController {
             HttpSession httpSession = req.getSession(true);
             httpSession.setAttribute("user", user);
             httpSession.setMaxInactiveInterval(3600);
-            return "redirect:/product/list.do";
+            return "redirect:/index.do";
 
         } catch (Exception e) {
             req.setAttribute("error", "아이디 또는 비밀번호를 잘못 입력하셨습니다.");
