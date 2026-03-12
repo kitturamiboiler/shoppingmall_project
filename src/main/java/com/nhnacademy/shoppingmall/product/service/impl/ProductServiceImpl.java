@@ -2,6 +2,7 @@ package com.nhnacademy.shoppingmall.product.service.impl;
 
 import com.nhnacademy.shoppingmall.common.page.Page;
 import com.nhnacademy.shoppingmall.product.domain.Product;
+import com.nhnacademy.shoppingmall.product.exception.NotEnoughStockException;
 import com.nhnacademy.shoppingmall.product.repository.ProductRepository;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
 
@@ -44,6 +45,14 @@ public class ProductServiceImpl implements ProductService {
         int result = productRepository.save(product);
         if (result < 1) {
             throw new RuntimeException("상품 등록 실패");
+        }
+    }
+
+    @Override
+    public void updateStock(int productId, int quantity) {
+        int result = productRepository.updateStock(productId, quantity);
+        if(result == 0){
+            throw new NotEnoughStockException(productId);
         }
     }
 }

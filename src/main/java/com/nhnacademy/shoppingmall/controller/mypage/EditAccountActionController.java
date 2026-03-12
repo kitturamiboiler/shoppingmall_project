@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.time.LocalDateTime;
 
-@RequestMapping(method = RequestMapping.Method.POST,value = "/editAccountAction.do")
+@RequestMapping(method = RequestMapping.Method.POST,value = "/mypage/editAccountAction.do")
 public class EditAccountActionController implements BaseController {
 
     private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());

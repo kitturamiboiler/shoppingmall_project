@@ -2,7 +2,7 @@
 
 <div style="margin: auto; width: 400px;">
   <div class="p-2">
-    <form method="post" action="/editAccountAction.do">
+    <form method="post" action="/mypage/editAccountAction.do">
 
       <h1 class="h3 mb-3 fw-normal">회원 정보 수정</h1>
 

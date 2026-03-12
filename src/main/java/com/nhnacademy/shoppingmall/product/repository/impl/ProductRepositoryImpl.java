@@ -2,6 +2,7 @@ package com.nhnacademy.shoppingmall.product.repository.impl;
 
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
 import com.nhnacademy.shoppingmall.product.domain.Product;
+import com.nhnacademy.shoppingmall.product.exception.NotEnoughStockException;
 import com.nhnacademy.shoppingmall.product.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -126,7 +127,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         return productList;
     }
     @Override
-    public void updateStock(int productId, int quantity) {
+    public int updateStock(int productId, int quantity) {
         String sql = "UPDATE products SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
         Connection connection = DbConnectionThreadLocal.getConnection();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -134,9 +135,10 @@ public class ProductRepositoryImpl implements ProductRepository {
             ps.setInt(2, productId);
             ps.setInt(3, quantity);
             int result = ps.executeUpdate();
-            if (result == 0) {
-                throw new RuntimeException("재고 업데이트 실패 (상품 ID: " + productId + " - 재고 부족 가능성)");
+            if(result >= 2){
+                throw new RuntimeException("DB오류");
             }
+            return result;
         } catch (SQLException e) {
             throw new RuntimeException("재고 업데이트 중 DB 오류 발생", e);
         }

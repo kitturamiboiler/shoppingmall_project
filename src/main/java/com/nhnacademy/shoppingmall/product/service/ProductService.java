@@ -7,4 +7,5 @@ public interface ProductService {
     Product getProduct(int id);
     Page<Product> getProductPage(int page);
     void saveProduct(Product product);
+    void updateStock(int productId, int quantity);
 }

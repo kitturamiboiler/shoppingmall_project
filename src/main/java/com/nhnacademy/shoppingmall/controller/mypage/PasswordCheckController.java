@@ -5,7 +5,7 @@ import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@RequestMapping(method = RequestMapping.Method.GET,value = "/passwordCheck.do")
+@RequestMapping(method = RequestMapping.Method.GET,value = "/mypage/passwordCheck.do")
 public class PasswordCheckController implements BaseController {
 
     @Override

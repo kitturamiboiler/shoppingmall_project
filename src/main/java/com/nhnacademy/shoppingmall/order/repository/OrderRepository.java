@@ -7,5 +7,6 @@ import java.util.Optional;
 public interface OrderRepository {
     int save(Order order);
     Optional<Order> findById(int id);
-    List<Order> findAllByUserId(String userId);
+    List<Order> findAllByUserId(String userId, int offset, int pageSize);
+     long countByUserId(String userId);
 }

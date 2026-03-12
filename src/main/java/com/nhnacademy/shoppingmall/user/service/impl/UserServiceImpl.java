@@ -1,5 +1,6 @@
 package com.nhnacademy.shoppingmall.user.service.impl;
 
+import com.nhnacademy.shoppingmall.user.exception.NotEnoughPointException;
 import com.nhnacademy.shoppingmall.user.exception.UserAlreadyExistsException;
 import com.nhnacademy.shoppingmall.user.exception.UserNotFoundException;
 import com.nhnacademy.shoppingmall.user.service.UserService;
@@ -73,5 +74,15 @@ public class UserServiceImpl implements UserService {
         user.setUserPoint(user.getUserPoint() + amount);
         userRepository.update(user);
         log.info("포인트 변동 기록: 사용자={}, 변동액={}, 사유={}", userId, amount, reason);
+    }
+
+    @Override
+    public void pointDeduction(String userId, int usePoint) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        int point = user.getUserPoint() - usePoint;
+        if(point < 0){
+            throw new NotEnoughPointException();
+        }
+        userRepository.updatePointByUserId(userId, point);
     }
 }

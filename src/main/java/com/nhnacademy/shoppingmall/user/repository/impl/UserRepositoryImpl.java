@@ -136,6 +136,20 @@ public class UserRepositoryImpl implements UserRepository {
         }
         return 0;
     }
+
+    @Override
+    public void updatePointByUserId(String userId, int point) {
+        String sql = "update users set user_point = ? where user_id=?";
+        Connection connection = DbConnectionThreadLocal.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, point);
+            ps.setString(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private User mapToUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getString("user_id"),
@@ -148,4 +162,6 @@ public class UserRepositoryImpl implements UserRepository {
                 Objects.nonNull(rs.getTimestamp("latest_login_at")) ? rs.getTimestamp("latest_login_at").toLocalDateTime() : null
         );
     }
+
+
 }

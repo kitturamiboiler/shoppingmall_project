@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.util.Objects;
 
-@RequestMapping(method = RequestMapping.Method.GET,value = "/deleteAccount.do")
+@RequestMapping(method = RequestMapping.Method.GET,value = "/mypage/deleteAccount.do")
 public class DeleteAccountController implements BaseController {
 
     private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());

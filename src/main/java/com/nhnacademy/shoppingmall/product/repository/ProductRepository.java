@@ -13,5 +13,5 @@ public interface ProductRepository {
 
      List<Product> findAll(int offset, int limit);
      int countAll();
-    void updateStock(int productId, int quantity);
+    int updateStock(int productId, int quantity);
 }

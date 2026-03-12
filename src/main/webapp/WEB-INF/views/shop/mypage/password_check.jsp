@@ -2,7 +2,7 @@
 
 <div style="margin: auto; width: 400px;">
     <div class="p-2">
-        <form method="post" action="/passwordCheckAction.do">
+        <form method="post" action="/mypage/passwordCheckAction.do">
 
             <h1 class="h3 mb-3 fw-normal">회원 정보 수정</h1>
             <p class="text-muted small">정보 수정을 위해 현재 비밀번호를 입력해주세요.</p>

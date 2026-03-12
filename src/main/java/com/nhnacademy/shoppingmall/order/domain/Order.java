@@ -21,9 +21,11 @@ public class Order {
 
     public Order() {}
 
-    public Order(String userId, double total) {
+    public Order(String userId, int productId, int quantity, double total, LocalDateTime createdAt) {
         this.userId = userId;
+        this.productId = productId;
+        this.quantity = quantity;
         this.total = total;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 }

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@RequestMapping(method = RequestMapping.Method.POST,value = "/passwordCheckAction.do")
+@RequestMapping(method = RequestMapping.Method.POST,value = "/mypage/passwordCheckAction.do")
 public class PasswordCheckActionController implements BaseController {
 
     @Override
