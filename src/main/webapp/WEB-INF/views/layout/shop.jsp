@@ -80,10 +80,10 @@
 
                             <c:if test="${not empty sessionScope.user}">
                                 <li>
-                                    <div class="nav-link px-3 text-primary fw-bold" style="cursor: default;">
+                                    <a href="/mypage/pointHistory.do" class="nav-link px-3 position-relative">
                                         <i class="bi bi-coin me-1"></i>
                                         <fmt:formatNumber value="${sessionScope.user.userPoint}" type="number" />P
-                                    </div>
+                                    </a>
                                 </li>
                             </c:if>
                         </ul>

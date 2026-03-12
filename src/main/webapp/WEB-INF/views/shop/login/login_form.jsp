@@ -6,6 +6,11 @@
 
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
+            <% if(request.getAttribute("error") != null) { %>
+            <div class="alert alert-danger p-2" style="font-size: 0.9rem;">
+                <%= request.getAttribute("error") %>
+            </div>
+            <% } %>
             <div class="form-floating">
                 <input type="text" name="user_id" class="form-control" id="user_id" placeholder="회원 아이디" required>
                 <label for="user_id">회원아이디</label>

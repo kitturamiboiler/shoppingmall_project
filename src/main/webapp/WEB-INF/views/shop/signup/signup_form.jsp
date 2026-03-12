@@ -34,7 +34,7 @@
                 <label for="user_birth">생년월일 (8자리: 19950101)</label>
             </div>
 
-            <button class="w-100 btn btn-lg btn-success mt-3" type="submit">회원가입</button>
+            <button class="w-100 btn btn-lg btn-success mt-3" type="submit">sign up</button>
 
             <div class="mt-3 text-center">
                 <a href="/login.do" class="text-decoration-none text-secondary">이미 계정이 있으신가요? 로그인</a>
