@@ -1,5 +1,7 @@
 package com.nhnacademy.shoppingmall.common.initialize;
 
+import com.nhnacademy.shoppingmall.category.repository.CategoryRepository;
+import com.nhnacademy.shoppingmall.category.service.CategoryService;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.common.mvc.controller.ControllerFactory;
 import com.nhnacademy.shoppingmall.order.repository.impl.OrderItemRepositoryImpl;
@@ -15,6 +17,8 @@ import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
 import com.nhnacademy.shoppingmall.point.service.PointHistoryService;
 import com.nhnacademy.shoppingmall.point.service.impl.PointHistoryServiceImpl;
 import com.nhnacademy.shoppingmall.point.repository.impl.PointHistoryRepositoryImpl;
+import com.nhnacademy.shoppingmall.category.repository.impl.CategoryRepositoryImpl;
+import com.nhnacademy.shoppingmall.category.service.impl.CategoryServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.ServletContainerInitializer;
@@ -34,6 +38,8 @@ public class WebAppInitializer implements ServletContainerInitializer {
         PointHistoryService pointHistoryService = new PointHistoryServiceImpl(pointRepository);
         ProductRepositoryImpl productRepository = new ProductRepositoryImpl();
         ProductService productService = new ProductServiceImpl(productRepository);
+        CategoryRepository categoryRepository = new CategoryRepositoryImpl();
+        CategoryService categoryService = new CategoryServiceImpl(categoryRepository);
 
         OrderService orderService = new OrderServiceImpl(
                 new OrderRepositoryImpl(),
@@ -47,12 +53,9 @@ public class WebAppInitializer implements ServletContainerInitializer {
         ctx.setAttribute("productService", productService);
         ctx.setAttribute("orderService", orderService);
         ctx.setAttribute("pointHistoryService", pointHistoryService);
+        ctx.setAttribute("categoryService", categoryService);
 
-        /*
-         * CategoryRepository categoryRepository = new CategoryRepositoryImpl();
-         * CategoryService categoryService = new CategoryServiceImpl(categoryRepository);
-         * ctx.setAttribute("categoryService", categoryService);
-         */
+
 
         ControllerFactory controllerFactory = new ControllerFactory();
         controllerFactory.initialize(c, ctx);

@@ -23,8 +23,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = DbConnectionThreadLocal.getConnection();
-        try (PreparedStatement psmt = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement psmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             psmt.setString(1, product.getCategory());
             psmt.setString(2, product.getTitle());
             psmt.setInt(3, product.getPrice());
@@ -34,8 +33,14 @@ public class ProductRepositoryImpl implements ProductRepository {
             psmt.setString(7, product.getVendor());
             psmt.setTimestamp(8, Timestamp.valueOf(product.getCreatedAt()));
 
-            return psmt.executeUpdate();
+            int result = psmt.executeUpdate();
 
+            try (ResultSet rs = psmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    product.setId(rs.getInt(1));
+                }
+            }
+            return result;
         } catch (SQLException e) {
             log.error("상품 등록 실패: {}", e.getMessage(), e);
             DbConnectionThreadLocal.setSqlError(true);
@@ -45,9 +50,11 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Product findById(int id) {
-        String sql = "SELECT * FROM products WHERE id = ?";
+        String sql = "SELECT p.*, c.name AS category_name " +
+                "FROM products p " +
+                "LEFT JOIN categories c ON p.category_id = c.id";
         Connection conn = DbConnectionThreadLocal.getConnection();
-
+        List<Product> products = new ArrayList<>();
         try (PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setInt(1, id);
 
@@ -55,7 +62,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 if (rs.next()) {
                     return new Product(
                             rs.getInt("id"),
-                            rs.getString("category"),
+                            rs.getString("category_name"), // TABLE categories 생성 후 Join
                             rs.getString("title"),
                             rs.getInt("price"),
                             rs.getInt("quantity"),
@@ -221,5 +228,41 @@ public class ProductRepositoryImpl implements ProductRepository {
             throw new RuntimeException("상품명 검색 중 오류 발생", e);
         }
         return productList;
+    }
+    @Override
+    public int update(Product product) {
+        String sql = "UPDATE products SET category=?, title=?, price=?, quantity=?, ean=?, vendor=? WHERE id=?";
+        Connection conn = DbConnectionThreadLocal.getConnection();
+
+        try (PreparedStatement psmt = conn.prepareStatement(sql)) {
+            psmt.setString(1, product.getCategory());
+            psmt.setString(2, product.getTitle());
+            psmt.setInt(3, product.getPrice());
+            psmt.setInt(4, product.getQuantity());
+            psmt.setString(5, product.getEan());
+            psmt.setString(6, product.getVendor());
+            psmt.setInt(7, product.getId());
+
+            return psmt.executeUpdate();
+        } catch (SQLException e) {
+            log.error("상품 수정 실패 (ID: {}): {}", product.getId(), e.getMessage(), e);
+            DbConnectionThreadLocal.setSqlError(true);
+            throw new RuntimeException("상품 수정 중 오류 발생", e);
+        }
+    }
+
+    @Override
+    public int deleteById(int id) {
+        String sql = "DELETE FROM products WHERE id = ?";
+        Connection conn = DbConnectionThreadLocal.getConnection();
+
+        try (PreparedStatement psmt = conn.prepareStatement(sql)) {
+            psmt.setInt(1, id);
+            return psmt.executeUpdate();
+        } catch (SQLException e) {
+            log.error("상품 삭제 실패 (ID: {}): {}", id, e.getMessage(), e);
+            DbConnectionThreadLocal.setSqlError(true);
+            throw new RuntimeException("상품 삭제 중 오류 발생", e);
+        }
     }
 }

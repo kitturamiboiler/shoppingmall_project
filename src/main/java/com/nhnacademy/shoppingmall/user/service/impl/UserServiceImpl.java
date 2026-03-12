@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -73,5 +74,10 @@ public class UserServiceImpl implements UserService {
         user.setUserPoint(user.getUserPoint() + amount);
         userRepository.update(user);
         log.info("포인트 변동 기록: 사용자={}, 변동액={}, 사유={}", userId, amount, reason);
+    }
+    //추가
+    @Override
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 }

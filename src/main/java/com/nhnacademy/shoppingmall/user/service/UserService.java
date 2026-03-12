@@ -2,6 +2,8 @@ package com.nhnacademy.shoppingmall.user.service;
 
 import com.nhnacademy.shoppingmall.user.domain.User;
 
+import java.util.List;
+
 public interface UserService {
 
     User getUser(String userId);
@@ -15,4 +17,6 @@ public interface UserService {
     User doLogin(String userId, String userPassword);
 
     void updateUserPoint(String userId, int pointAmount, String reason);
+    //추가
+    List<User> getUsers();
 }
