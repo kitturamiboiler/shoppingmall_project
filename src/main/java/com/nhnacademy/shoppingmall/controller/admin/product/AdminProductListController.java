@@ -8,7 +8,7 @@ import com.nhnacademy.shoppingmall.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@RequestMapping(method = RequestMapping.Method.GET, value = "/admin/admin_product/list.do")
+@RequestMapping(method = RequestMapping.Method.GET, value = "/admin/product/list.do")
 public class AdminProductListController implements BaseController {
 
     @Override

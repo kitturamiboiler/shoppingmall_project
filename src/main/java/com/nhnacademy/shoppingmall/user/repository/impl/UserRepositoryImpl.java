@@ -141,27 +141,19 @@ public class UserRepositoryImpl implements UserRepository {
     //추가
     @Override
     public List<User> findAll() {
-        String sql = "SELECT name, birth_date, created_at, password FROM users";
+        String sql = "SELECT user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at FROM users";
         List<User> userList = new ArrayList<>();
+        Connection conn = DbConnectionThreadLocal.getConnection();
 
-        try (Connection conn = DbConnectionThreadLocal.getConnection();
-             PreparedStatement psmt = conn.prepareStatement(sql);
+        try (PreparedStatement psmt = conn.prepareStatement(sql);
              ResultSet rs = psmt.executeQuery()) {
 
             while (rs.next()) {
-                userList.add(new User(
-                        rs.getString("name"),
-                        rs.getString("name"),
-                        rs.getString("password"),
-                        rs.getString("birth_date"),
-                        User.Auth.ROLE_USER,
-                        0,
-                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-                        null
-                ));
+                userList.add(mapToUser(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("회원 조회 중 DB 에러: " + e.getMessage(), e);
+            DbConnectionThreadLocal.setSqlError(true);
+            throw new RuntimeException("회원 조회 중 DB 에러", e);
         }
         return userList;
     }

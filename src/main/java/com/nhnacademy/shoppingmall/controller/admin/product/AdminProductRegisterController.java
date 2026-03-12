@@ -21,8 +21,8 @@ public class AdminProductRegisterController implements BaseController {
         ProductService productService = (ProductService) req.getServletContext().getAttribute("productService");
 
         try {
+            Long categoryId = Long.parseLong(req.getParameter("categoryId"));
             String title = req.getParameter("title");
-            String category = req.getParameter("category");
             int price = Integer.parseInt(req.getParameter("price"));
             Integer quantity = Integer.parseInt(req.getParameter("quantity"));
             String vendor = req.getParameter("vendor");
@@ -32,8 +32,8 @@ public class AdminProductRegisterController implements BaseController {
             String fileName = saveFile(req, filePart);
 
             Product product = new Product(
-                    null, // Auto Increment
-                    category,
+                    0,
+                    null,
                     title,
                     price,
                     quantity,
@@ -42,7 +42,7 @@ public class AdminProductRegisterController implements BaseController {
                     vendor,
                     LocalDateTime.now()
             );
-
+            product.setCategoryId(categoryId); //외래키
             productService.saveProduct(product);
 
         } catch (Exception e) {

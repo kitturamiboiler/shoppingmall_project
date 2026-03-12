@@ -34,19 +34,23 @@
       <tbody>
       <c:forEach var="item" items="${products}">
         <tr>
-          <td class="text-center text-muted">${item.productId}</td>
+          <td class="text-center text-muted">${item.id}</td>
+
           <td class="text-center">
-            <img src="${empty item.imagePath ? '/resources/images/no-image.png' : item.imagePath}"
-                 alt="product" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+            <img src="/resources/no-image.png" alt="product" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
           </td>
-          <td><span class="badge bg-info text-dark">${item.categoryName}</span></td>
+
+          <td><span class="badge bg-info text-dark">${item.category}</span></td>
+
           <td>
             <div class="fw-bold">${item.title}</div>
             <small class="text-muted">${item.vendor} | EAN: ${item.ean}</small>
           </td>
+
           <td class="text-end fw-bold">
             <fmt:formatNumber value="${item.price}" type="currency" currencySymbol="₩" />
           </td>
+
           <td class="text-end">
             <c:choose>
               <c:when test="${item.quantity <= 10}">
@@ -55,14 +59,16 @@
               <c:otherwise>${item.quantity}개</c:otherwise>
             </c:choose>
           </td>
+
           <td class="text-center text-muted" style="font-size: 0.85rem;">
             <fmt:parseDate value="${item.createdAt}" pattern="yyyy-MM-dd'T'HH:mm" var="pDate" type="both" />
             <fmt:formatDate value="${pDate}" pattern="yyyy-MM-dd" />
           </td>
+
           <td class="text-center">
-            <a href="/admin/product/edit.do?id=${item.productId}" class="btn btn-sm btn-outline-primary">수정</a>
+            <a href="/admin/product/edit.do?id=${item.id}" class="btn btn-sm btn-outline-primary">수정</a>
             <button type="button" class="btn btn-sm btn-outline-danger"
-                    onclick="if(confirm('정말 삭제하시겠습니까?')) location.href='/admin/product/delete.do?id=${item.productId}'">삭제</button>
+                    onclick="if(confirm('정말 삭제하시겠습니까?')) location.href='/admin/product/delete.do?id=${item.id}'">삭제</button>
           </td>
         </tr>
       </c:forEach>
