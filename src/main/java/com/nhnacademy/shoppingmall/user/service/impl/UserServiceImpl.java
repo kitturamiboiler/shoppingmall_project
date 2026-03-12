@@ -65,24 +65,14 @@ public class UserServiceImpl implements UserService {
         return userOptional.get();
     }
     @Override
-    public void updateUserPoint(String userId, int amount, String reason) {
+    public void updateUserPoint(String userId, int pointDelta) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
-        if (amount < 0 && user.getUserPoint() + amount < 0) {
-            throw new RuntimeException("잔여 포인트가 부족합니다.");
-        }
-        user.setUserPoint(user.getUserPoint() + amount);
-        userRepository.update(user);
-        log.info("포인트 변동 기록: 사용자={}, 변동액={}, 사유={}", userId, amount, reason);
-    }
-
-    @Override
-    public void pointDeduction(String userId, int usePoint) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        int point = user.getUserPoint() - usePoint;
-        if(point < 0){
+        if (user.getUserPoint() + pointDelta < 0) {
             throw new NotEnoughPointException();
         }
-        userRepository.updatePointByUserId(userId, point);
+        user.setUserPoint(user.getUserPoint() + pointDelta);
+        userRepository.update(user);
+        log.info("포인트 변동 기록: 사용자={}, 변동액={}", userId, pointDelta);
     }
 }

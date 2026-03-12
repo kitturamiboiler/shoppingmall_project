@@ -64,4 +64,16 @@ public class PointHistoryRepositoryImpl implements PointHistoryRepository {
             throw new RuntimeException("포인트 이력 카운트 실패", e);
         }
     }
+
+    @Override
+    public int deleteByUserId(String userId) {
+        Connection connection = DbConnectionThreadLocal.getConnection();
+        String sql = "DELETE FROM point_history WHERE user_id = ?";
+        try (PreparedStatement psmt = connection.prepareStatement(sql)) {
+            psmt.setString(1, userId);
+            return psmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("포인트 이력 삭제 실패", e);
+        }
+    }
 }

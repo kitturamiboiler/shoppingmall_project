@@ -32,6 +32,10 @@
           <i class="bi bi-bag-check"></i> 나의 주문 내역 보기
         </a>
 
+        <a href="/mypage/pointHistory.do" class="btn btn-lg py-3" style="border-color: #ffc107; color: #d39e00; background-color: transparent;">
+          <i class="bi bi-database-fill-add"></i> 나의 포인트 내역 보기
+        </a>
+
         <a href="/mypage/passwordCheck.do" class="btn btn-dark btn-lg py-3">
           <i class="bi bi-person-gear"></i> 회원 정보 수정
         </a>

@@ -28,4 +28,9 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         PointHistory history = new PointHistory(null, userId, amount, reason, LocalDateTime.now());
         pointHistoryRepository.save(history);
     }
+
+    @Override
+    public void deleteHistory(String userId) {
+        pointHistoryRepository.deleteByUserId(userId);
+    }
 }

@@ -2,6 +2,9 @@ package com.nhnacademy.shoppingmall.controller.mypage;
 
 import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
+import com.nhnacademy.shoppingmall.point.repository.impl.PointHistoryRepositoryImpl;
+import com.nhnacademy.shoppingmall.point.service.PointHistoryService;
+import com.nhnacademy.shoppingmall.point.service.impl.PointHistoryServiceImpl;
 import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.user.repository.impl.UserRepositoryImpl;
 import com.nhnacademy.shoppingmall.user.service.UserService;
@@ -16,6 +19,7 @@ import java.util.Objects;
 public class DeleteAccountController implements BaseController {
 
     private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
+    private final PointHistoryService pointHistoryService = new PointHistoryServiceImpl(new PointHistoryRepositoryImpl());
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -24,6 +28,7 @@ public class DeleteAccountController implements BaseController {
             req.setAttribute("message", "세션이 만료되었습니다.");
         }else {
             User user = (User) session.getAttribute("user");
+            pointHistoryService.deleteHistory(user.getUserId());
             userService.deleteUser(user.getUserId());
             session.invalidate();
             req.setAttribute("message", "회원 탈퇴가 완료되었습니다.\r\n이용해주셔서 감사합니다.");

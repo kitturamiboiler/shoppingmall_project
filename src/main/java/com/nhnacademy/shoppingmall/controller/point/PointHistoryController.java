@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@RequestMapping(method = RequestMapping.Method.GET, value = "/mypage/point.do")
+@RequestMapping(method = RequestMapping.Method.GET, value = "/mypage/pointHistory.do")
 public class PointHistoryController implements BaseController {
     private final PointHistoryService pointHistoryService = new PointHistoryServiceImpl(new PointHistoryRepositoryImpl());
 
@@ -25,7 +25,12 @@ public class PointHistoryController implements BaseController {
         int page = (pageParam == null) ? 1 : Integer.parseInt(pageParam);
         int pageSize = 10;
         Page<PointHistory> pointHistoryPage = pointHistoryService.getPointHistoryPage(user.getUserId(), page, pageSize);
+        long totalCount = pointHistoryPage.getTotalCount();
+        long totalPages = (totalCount > 0) ? (totalCount + pageSize - 1) / pageSize : 1;
+
         req.setAttribute("pointHistoryPage", pointHistoryPage);
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", totalPages);
 
         return "shop/mypage/point_history";
     }

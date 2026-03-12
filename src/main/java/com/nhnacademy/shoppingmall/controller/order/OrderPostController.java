@@ -13,11 +13,14 @@ import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.repository.impl.ProductRepositoryImpl;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
 import com.nhnacademy.shoppingmall.product.service.impl.ProductServiceImpl;
+import com.nhnacademy.shoppingmall.thread.channel.RequestChannel;
+import com.nhnacademy.shoppingmall.thread.request.impl.PointChannelRequest;
 import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.cart.domain.Cart;
 import com.nhnacademy.shoppingmall.user.repository.impl.UserRepositoryImpl;
 import com.nhnacademy.shoppingmall.user.service.UserService;
 import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +36,7 @@ public class OrderPostController implements BaseController {
     private ProductService productService = new ProductServiceImpl(new ProductRepositoryImpl());
     private UserService userService = new UserServiceImpl(new UserRepositoryImpl());
     private PointHistoryService pointHistoryService = new PointHistoryServiceImpl(new PointHistoryRepositoryImpl());
+    private final String POINT_REASON = "상품 구매 금액 차감";
 
     public OrderPostController() {
     }
@@ -43,6 +47,9 @@ public class OrderPostController implements BaseController {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         Cart cart = (Cart) session.getAttribute("cart");
+
+        ServletContext context = request.getServletContext();
+        RequestChannel requestChannel = (RequestChannel) context.getAttribute("requestChannel");
 
         if (user == null) return "redirect:/login.do";
         if (cart == null || cart.getTotalItemCount() == 0) return "redirect:/cart/view.do";
@@ -61,10 +68,17 @@ public class OrderPostController implements BaseController {
                 Order order = new Order(userId, productId, quantity, total, createdAt);
                 orderService.createOrder(order);
 
-                totalAmount += total;
+                 totalAmount += total;
             }
-            userService.pointDeduction(userId, totalAmount);
+            userService.updateUserPoint(userId, totalAmount * (-1));
+            pointHistoryService.recordHistory(userId, totalAmount * (-1), POINT_REASON);
 
+            requestChannel.addRequest(new PointChannelRequest(userId, totalAmount));
+
+            int updatePoint = user.getUserPoint() - totalAmount + (int)(totalAmount * 0.1);
+            user.setUserPoint(updatePoint);
+
+            session.setAttribute("user", user);
             session.removeAttribute("cart");
 
             return "redirect:/mypage/orderList.do";
