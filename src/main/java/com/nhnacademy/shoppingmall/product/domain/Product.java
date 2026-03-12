@@ -15,6 +15,7 @@ public class Product {
     private final double rating;
     private final String vendor;
     private final LocalDateTime createdAt;
+    private Long categoryId;
     @Builder
     public Product(String category, String title, int price, int quantity, String ean, String vendor) {
         this(null, category, title, price, quantity, ean, 0.0, vendor, LocalDateTime.now());
@@ -48,6 +49,9 @@ public class Product {
         }
     }
 
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
     public void setId(Integer id) {
         this.id = id;
     }

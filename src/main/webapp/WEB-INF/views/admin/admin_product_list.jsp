@@ -9,73 +9,68 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<style>
-  .product-img {
-    width: 50px; height: 50px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid #eee;
-  }
-  .table thead th {
-    background-color: #f9fafb;
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: #4b5563;
-    border-top: none;
-  }
-  .price-text { color: #e11d48; font-weight: 700; }
-  .btn-action { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
-</style>
-
 <div class="container-fluid py-2">
-  <div class="d-flex justify-content-between align-items-end mb-4">
-    <div>
-      <h4 class="fw-bold mb-1">상품 목록</h4>
-      <p class="text-muted small mb-0">총 <span class="text-primary fw-bold">${products.size()}</span>개의 상품이 등록되어 있습니다.</p>
-    </div>
-    <a href="/admin/product/register_form.do" class="btn btn-dark shadow-sm">
-      <i class="bi bi-plus-lg me-1"></i> 상품 등록
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-box-seam me-2"></i>상품 관리</h4>
+    <a href="/admin/product/register_form.do" class="btn btn-primary">
+      <i class="bi bi-plus-lg me-1"></i>신규 상품 등록
     </a>
   </div>
 
   <div class="card border-0 shadow-sm overflow-hidden">
     <table class="table table-hover align-middle mb-0">
-      <thead>
+      <thead class="table-light">
       <tr>
-        <th class="text-center">ID</th>
-        <th>이미지</th>
-        <th>상품 정보</th>
+        <th style="width: 80px;" class="text-center">ID</th>
+        <th style="width: 100px;">이미지</th>
         <th>카테고리</th>
-        <th class="text-end">가격(P)</th>
-        <th class="text-center">재고</th>
-        <th class="text-center">관리</th>
+        <th>상품명 / 제조사</th>
+        <th class="text-end">판매가</th>
+        <th class="text-end">재고</th>
+        <th class="text-center">등록일</th>
+        <th style="width: 150px;" class="text-center">관리</th>
       </tr>
       </thead>
       <tbody>
-      <c:forEach var="p" items="${products}">
+      <c:forEach var="item" items="${products}">
         <tr>
-          <td class="text-center text-muted small">${p.id}</td>
-          <td>
-            <img src="/resources/images/products/${p.id}.jpg"
-                 onerror="this.src='https://placehold.co/50x50?text=No+Img';" class="product-img">
-          </td>
-          <td>
-            <div class="fw-bold text-dark">${p.title}</div>
-            <div class="text-muted small" style="font-size: 0.75rem;">${p.vendor} | EAN: ${p.ean}</div>
-          </td>
-          <td><span class="badge rounded-pill bg-light text-dark border">${p.category}</span></td>
-          <td class="text-end price-text"><fmt:formatNumber value="${p.price}" type="number"/> P</td>
-          <td class="text-center">${p.quantity}</td>
+          <td class="text-center text-muted">${item.productId}</td>
           <td class="text-center">
-            <a href="/admin/product/edit_form.do?id=${p.id}" class="btn btn-sm btn-outline-secondary btn-action">수정</a>
-            <form action="/admin/product/delete.do" method="post" class="d-inline">
-              <input type="hidden" name="id" value="${p.id}">
-              <button type="submit" class="btn btn-sm btn-outline-danger btn-action"
-                      onclick="return confirm('삭제 후 복구가 불가능합니다. 삭제하시겠습니까?');">삭제</button>
-            </form>
+            <img src="${empty item.imagePath ? '/resources/images/no-image.png' : item.imagePath}"
+                 alt="product" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+          </td>
+          <td><span class="badge bg-info text-dark">${item.categoryName}</span></td>
+          <td>
+            <div class="fw-bold">${item.title}</div>
+            <small class="text-muted">${item.vendor} | EAN: ${item.ean}</small>
+          </td>
+          <td class="text-end fw-bold">
+            <fmt:formatNumber value="${item.price}" type="currency" currencySymbol="₩" />
+          </td>
+          <td class="text-end">
+            <c:choose>
+              <c:when test="${item.quantity <= 10}">
+                <span class="text-danger fw-bold">${item.quantity} (품절임박)</span>
+              </c:when>
+              <c:otherwise>${item.quantity}개</c:otherwise>
+            </c:choose>
+          </td>
+          <td class="text-center text-muted" style="font-size: 0.85rem;">
+            <fmt:parseDate value="${item.createdAt}" pattern="yyyy-MM-dd'T'HH:mm" var="pDate" type="both" />
+            <fmt:formatDate value="${pDate}" pattern="yyyy-MM-dd" />
+          </td>
+          <td class="text-center">
+            <a href="/admin/product/edit.do?id=${item.productId}" class="btn btn-sm btn-outline-primary">수정</a>
+            <button type="button" class="btn btn-sm btn-outline-danger"
+                    onclick="if(confirm('정말 삭제하시겠습니까?')) location.href='/admin/product/delete.do?id=${item.productId}'">삭제</button>
           </td>
         </tr>
       </c:forEach>
+      <c:if test="${empty products}">
+        <tr>
+          <td colspan="8" class="text-center py-5 text-muted">등록된 상품이 없습니다.</td>
+        </tr>
+      </c:if>
       </tbody>
     </table>
   </div>
