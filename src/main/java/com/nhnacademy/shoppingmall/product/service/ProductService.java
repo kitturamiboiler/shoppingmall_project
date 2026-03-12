@@ -12,4 +12,5 @@ public interface ProductService {
     List<Product> getProductsByCategory(String category, int offset, int limit);
     List<String> getAllCategories();
     List<Product> getProductsByTitle(String title, int offset, int limit);
+    void updateStock(int productId, int quantity);
 }

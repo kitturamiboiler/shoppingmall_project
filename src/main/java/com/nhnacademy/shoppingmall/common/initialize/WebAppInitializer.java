@@ -2,7 +2,6 @@ package com.nhnacademy.shoppingmall.common.initialize;
 
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.common.mvc.controller.ControllerFactory;
-import com.nhnacademy.shoppingmall.order.repository.impl.OrderItemRepositoryImpl;
 import com.nhnacademy.shoppingmall.order.repository.impl.OrderRepositoryImpl;
 import com.nhnacademy.shoppingmall.order.service.OrderService;
 import com.nhnacademy.shoppingmall.order.service.impl.OrderServiceImpl;
@@ -36,11 +35,7 @@ public class WebAppInitializer implements ServletContainerInitializer {
         ProductService productService = new ProductServiceImpl(productRepository);
 
         OrderService orderService = new OrderServiceImpl(
-                new OrderRepositoryImpl(),
-                new OrderItemRepositoryImpl(),
-                productRepository,
-                userService,
-                pointHistoryService
+                new OrderRepositoryImpl()
         );
 
         ctx.setAttribute("userService", userService);

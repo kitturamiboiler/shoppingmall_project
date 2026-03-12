@@ -3,61 +3,85 @@ package com.nhnacademy.shoppingmall.controller.order;
 import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.order.domain.Order;
-import com.nhnacademy.shoppingmall.order.domain.OrderItem;
+import com.nhnacademy.shoppingmall.order.repository.impl.OrderRepositoryImpl;
 import com.nhnacademy.shoppingmall.order.service.OrderService;
+import com.nhnacademy.shoppingmall.order.service.impl.OrderServiceImpl;
+import com.nhnacademy.shoppingmall.point.repository.impl.PointHistoryRepositoryImpl;
+import com.nhnacademy.shoppingmall.point.service.PointHistoryService;
+import com.nhnacademy.shoppingmall.point.service.impl.PointHistoryServiceImpl;
+import com.nhnacademy.shoppingmall.product.domain.Product;
+import com.nhnacademy.shoppingmall.product.repository.impl.ProductRepositoryImpl;
+import com.nhnacademy.shoppingmall.product.service.ProductService;
+import com.nhnacademy.shoppingmall.product.service.impl.ProductServiceImpl;
+import com.nhnacademy.shoppingmall.thread.channel.RequestChannel;
+import com.nhnacademy.shoppingmall.thread.request.impl.PointChannelRequest;
 import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.cart.domain.Cart;
+import com.nhnacademy.shoppingmall.user.repository.impl.UserRepositoryImpl;
+import com.nhnacademy.shoppingmall.user.service.UserService;
+import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
 @RequestMapping(method = RequestMapping.Method.POST, value = "/order/post.do")
 public class OrderPostController implements BaseController {
-    private OrderService orderService;
+    private OrderService orderService = new OrderServiceImpl(new OrderRepositoryImpl());
+    private ProductService productService = new ProductServiceImpl(new ProductRepositoryImpl());
+    private UserService userService = new UserServiceImpl(new UserRepositoryImpl());
+    private PointHistoryService pointHistoryService = new PointHistoryServiceImpl(new PointHistoryRepositoryImpl());
+    private final String POINT_REASON = "상품 구매 금액 차감";
 
     public OrderPostController() {
     }
 
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
-        if (this.orderService == null) {
-            this.orderService = (OrderService) request.getServletContext().getAttribute("orderService");
-        }
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         Cart cart = (Cart) session.getAttribute("cart");
 
+        ServletContext context = request.getServletContext();
+        RequestChannel requestChannel = (RequestChannel) context.getAttribute("requestChannel");
+
         if (user == null) return "redirect:/login.do";
         if (cart == null || cart.getTotalItemCount() == 0) return "redirect:/cart/view.do";
 
         try {
-            Order order = new Order();
-            order.setUserId(user.getUserId());
-            order.setCreatedAt(java.time.LocalDateTime.now());
-            List<OrderItem> orderItems = new ArrayList<>();
+            String userId = user.getUserId();
+            LocalDateTime createdAt = LocalDateTime.now();
             Map<Integer, Integer> cartItems = cart.getItems();
+            int totalAmount = 0;
+            for(int productId : cartItems.keySet()){
+                Product product = productService.getProduct(productId);
+                int quantity = cartItems.get(productId);
+                productService.updateStock(productId, quantity);
 
-            for (Map.Entry<Integer, Integer> entry : cartItems.entrySet()) {
-                OrderItem item = new OrderItem();
-                item.setProductId(entry.getKey());
-                item.setQuantity(entry.getValue());
-                orderItems.add(item);
+                int total = product.getPrice() * quantity;
+                Order order = new Order(userId, productId, quantity, total, createdAt);
+                orderService.createOrder(order);
+
+                 totalAmount += total;
             }
+            userService.updateUserPoint(userId, totalAmount * (-1));
+            pointHistoryService.recordHistory(userId, totalAmount * (-1), POINT_REASON);
 
-            orderService.createOrder(order, orderItems);
-            int orderId = order.getId();
-            if (orderId == 0) throw new RuntimeException("주문 번호 생성 실패");
+            requestChannel.addRequest(new PointChannelRequest(userId, totalAmount));
 
+            int updatePoint = user.getUserPoint() - totalAmount + (int)(totalAmount * 0.1);
+            user.setUserPoint(updatePoint);
+
+            session.setAttribute("user", user);
             session.removeAttribute("cart");
 
-            return "redirect:/order/success.do?orderId=" + orderId;
+            return "redirect:/mypage/orderList.do";
 
         } catch (Exception e) {
             log.error("주문 처리 실패: {}", e.getMessage(), e);

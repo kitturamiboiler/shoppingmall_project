@@ -28,11 +28,15 @@
       </div>
 
       <div class="d-grid gap-2">
-        <a href="/orderList.do" class="btn btn-outline-primary btn-lg py-3">
+        <a href="/mypage/orderList.do" class="btn btn-outline-primary btn-lg py-3">
           <i class="bi bi-bag-check"></i> 나의 주문 내역 보기
         </a>
 
-        <a href="/passwordCheck.do" class="btn btn-dark btn-lg py-3">
+        <a href="/mypage/pointHistory.do" class="btn btn-lg py-3" style="border-color: #ffc107; color: #d39e00; background-color: transparent;">
+          <i class="bi bi-database-fill-add"></i> 나의 포인트 내역 보기
+        </a>
+
+        <a href="/mypage/passwordCheck.do" class="btn btn-dark btn-lg py-3">
           <i class="bi bi-person-gear"></i> 회원 정보 수정
         </a>
       </div>
@@ -41,7 +45,7 @@
     <div class="card-footer bg-white border-0 text-center pb-4">
       <a href="/logout.do" class="btn btn-link text-muted text-decoration-none">로그아웃</a>
       <span class="text-muted">|</span>
-      <a href="/deleteAccount.do" class="btn btn-link text-danger text-decoration-none" onclick="return confirm('정말 탈퇴하시겠습니까?')">회원 탈퇴</a>
+      <a href="/mypage/deleteAccount.do" class="btn btn-link text-danger text-decoration-none" onclick="return confirm('정말 탈퇴하시겠습니까?')">회원 탈퇴</a>
     </div>
   </div>
 </div>

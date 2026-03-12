@@ -136,6 +136,7 @@ public class UserRepositoryImpl implements UserRepository {
         }
         return 0;
     }
+
     private User mapToUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getString("user_id"),
@@ -148,4 +149,6 @@ public class UserRepositoryImpl implements UserRepository {
                 Objects.nonNull(rs.getTimestamp("latest_login_at")) ? rs.getTimestamp("latest_login_at").toLocalDateTime() : null
         );
     }
+
+
 }

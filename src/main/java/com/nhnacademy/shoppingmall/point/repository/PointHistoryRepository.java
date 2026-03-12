@@ -7,4 +7,5 @@ public interface PointHistoryRepository {
     void save(PointHistory pointHistory);
     List<PointHistory> findAllByUserId(String userId, int offset, int limit);
     long countByUserId(String userId);
+    int deleteByUserId(String userId);
 }

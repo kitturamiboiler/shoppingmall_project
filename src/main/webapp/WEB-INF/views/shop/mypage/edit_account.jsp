@@ -2,9 +2,9 @@
 
 <div style="margin: auto; width: 400px;">
   <div class="p-2">
-    <form method="post" action="/editAccountAction.do">
+    <form method="post" action="/mypage/editAccountAction.do">
 
-      <h1 class="h3 mb-3 fw-normal">Edit Profile</h1>
+      <h1 class="h3 mb-3 fw-normal">회원 정보 수정</h1>
 
       <% if (request.getAttribute("errorMessage") != null) { %>
       <div class="alert alert-danger p-2" style="font-size: 0.9rem;">
