@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -136,6 +138,27 @@ public class UserRepositoryImpl implements UserRepository {
         }
         return 0;
     }
+    //추가
+    @Override
+    public List<User> findAll() {
+        String sql = "SELECT user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at FROM users";
+        List<User> userList = new ArrayList<>();
+
+        Connection conn = DbConnectionThreadLocal.getConnection();
+
+        try (PreparedStatement psmt = conn.prepareStatement(sql);
+             ResultSet rs = psmt.executeQuery()) {
+
+            while (rs.next()) {
+                userList.add(mapToUser(rs));
+            }
+        } catch (SQLException e) {
+            log.error("회원 전체 조회 실패: {}", e.getMessage());
+            DbConnectionThreadLocal.setSqlError(true);
+            throw new RuntimeException("회원 조회 중 DB 에러", e);
+        }
+        return userList;
+    }
 
     private User mapToUser(ResultSet rs) throws SQLException {
         return new User(
@@ -149,6 +172,4 @@ public class UserRepositoryImpl implements UserRepository {
                 Objects.nonNull(rs.getTimestamp("latest_login_at")) ? rs.getTimestamp("latest_login_at").toLocalDateTime() : null
         );
     }
-
-
 }

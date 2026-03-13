@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AdminIndexController implements BaseController {
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        // views/admin/dashboard.jsp 를 찾아서 출력합니다.
-        return "shop/admin/dashboard";
+        return "admin/dashboard";
     }
 }

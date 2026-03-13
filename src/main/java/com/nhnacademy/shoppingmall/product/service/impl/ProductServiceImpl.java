@@ -47,6 +47,24 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("상품 등록 실패");
         }
     }
+    @Override
+    public void updateProduct(Product product) {
+        if (Objects.isNull(product.getId())) {
+            throw new RuntimeException("수정할 상품의 ID가 없습니다.");
+        }
+        int result = productRepository.update(product);
+        if (result < 1) {
+            throw new RuntimeException("상품 수정 실패: 해당 상품이 존재하지 않습니다. (ID: " + product.getId() + ")");
+        }
+    }
+
+    @Override
+    public void deleteProduct(int id) {
+        int result = productRepository.deleteById(id);
+        if (result < 1) {
+            throw new RuntimeException("상품 삭제 실패: 해당 상품이 존재하지 않습니다. (ID: " + id + ")");
+        }
+    }
 
     @Override
     public List<String> getAllCategories() {
@@ -66,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
         if (title == null || title.trim().isEmpty()) {
             return productRepository.findAll(offset, limit);
         }
-        return productRepository.findAllCategory(title, offset, limit);
+        return productRepository.getProductsByTitle(title, offset, limit);
     }
 
     @Override

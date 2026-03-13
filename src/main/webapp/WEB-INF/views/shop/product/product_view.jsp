@@ -22,7 +22,7 @@
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="/index.do" class="text-decoration-none">Home</a></li>
-          <li class="breadcrumb-item active text-muted"><c:out value="${product.category}"/></li>
+          <li class="breadcrumb-item active text-muted"><c:out value="${product.categoryName}"/></li>
         </ol>
       </nav>
       <h1 class="fw-bold mb-3"><c:out value="${product.title}"/></h1>

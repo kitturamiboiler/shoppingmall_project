@@ -74,15 +74,16 @@
                         <div class="card h-100 border-0 shadow-sm product-card"
                              onclick="location.href='/product/view.do?id=${product.id}'" style="cursor:pointer;">
 
-                            <div class="product-img-wrapper">
-                                <img src="/resources/no-image.png"
+                            <div class="product-img-wrapper text-center">
+                                <img src="${product.resolvedImageUrl}"
                                      class="card-img p-3"
                                      alt="${product.title}"
-                                     style="max-height: 180px; width: auto; object-fit: contain;">
+                                     style="max-height: 180px; width: auto; object-fit: contain;"
+                                     onerror="this.src='/resources/no-image.png'">
                             </div>
 
                             <div class="card-body">
-                                <p class="text-muted small mb-1"><c:out value="${product.category}"/></p>
+                                <p class="text-muted small mb-1"><c:out value="${product.categoryId}"/></p>
                                 <h6 class="card-title mb-2"><c:out value="${product.title}"/></h6>
                                 <h5 class="point-text mb-0">
                                     <fmt:formatNumber value="${product.price}" type="number"/> <small class="fw-normal">P</small>

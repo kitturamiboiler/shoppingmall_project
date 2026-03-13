@@ -45,6 +45,7 @@ class CartViewControllerTest {
         verify(req).setAttribute(eq("cartItems"), anyMap());
         verify(req).setAttribute(eq("totalPrice"), eq(0L));
     }
+
     @Test
     @DisplayName("상품이 삭제된 경우 리스트에서 삭제되고 정상 실행 가능")
     public void execute_whenProductIsDeleted() {
@@ -56,15 +57,18 @@ class CartViewControllerTest {
         when(productService.getProduct(1)).thenReturn(null);
         cartViewController.execute(req, resp);
         verify(req).setAttribute(argThat(name -> name.equals("cartItems")),
-                argThat(map -> ((Map<?,?>)map).isEmpty()));
+                argThat(map -> ((Map<?, ?>) map).isEmpty()));
         verify(req).setAttribute("totalPrice", 0L);
     }
+
     @Test
     @DisplayName("합계 검증")
     public void execute_totalPriceSuccess() {
         Cart cart = new Cart();
         cart.addItem(1, 2, 100);
-        Product product = new Product("Test", "Desc", 1000, 100, "code", "brand");
+
+        Product product = new Product(1, "Desc", 1000, 100, "code", "brand");
+
         product.setId(1);
         when(req.getSession(false)).thenReturn(httpSession);
         when(httpSession.getAttribute("cart")).thenReturn(cart);
