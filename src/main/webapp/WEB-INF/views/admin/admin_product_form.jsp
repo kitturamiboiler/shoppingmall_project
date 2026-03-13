@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <div class="container-fluid py-2">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold"><i class="bi bi-plus-circle me-2"></i>신규 상품 등록</h4>
@@ -33,13 +34,16 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-bold">카테고리</label>
-                <select name="category" class="form-select" required>
+
+                <select name="categoryId" class="form-select" required>
                   <option value="">선택하세요</option>
-                  <option value="Gadget">Gadget</option>
-                  <option value="Doohickey">Doohickey</option>
-                  <option value="Gizmo">Gizmo</option>
-                  <option value="Widget">Widget</option>
+
+                  <c:forEach var="cat" items="${categories}">
+                    <option value="${cat.categoryId}">${cat.categoryName}</option>
+                  </c:forEach>
+
                 </select>
+
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-bold">판매 가격 (Point)</label>
@@ -56,6 +60,9 @@
                 <label class="form-label fw-bold">제조사 (Vendor)</label>
                 <input type="text" name="vendor" class="form-control" placeholder="제조사명을 입력하세요">
               </div>
+              <div class = "col-md-6">
+                <label class = "form-label fw-bold">바코드 (EAN)</label>
+                <input type ="text" name="ean" class="form-control" placeholder="13자리 숫자">
             </div>
           </div>
         </div>
@@ -63,6 +70,7 @@
         <div class="text-end">
           <button type="reset" class="btn btn-light me-2">초기화</button>
           <button type="submit" class="btn btn-primary px-5">상품 등록 완료</button>
+        </div>
         </div>
       </form>
     </div>
@@ -75,7 +83,7 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const container = document.getElementById('imagePreviewContainer');
-        container.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded shadow-sm" style="max-height: 250px;">`;
+        container.innerHTML = '<img src="' + e.target.result + '" class="img-fluid rounded shadow-sm" style="max-height: 250px;">';
       }
       reader.readAsDataURL(input.files[0]);
     }

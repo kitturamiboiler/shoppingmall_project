@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 public class Product {
     private Integer id;
-    private final String category;
+    private Integer categoryId;
+
     private final String title;
     private final int price;
     private final int quantity;
@@ -15,19 +16,19 @@ public class Product {
     private final double rating;
     private final String vendor;
     private final LocalDateTime createdAt;
-    private Long categoryId;
+
     @Builder
-    public Product(String category, String title, int price, int quantity, String ean, String vendor) {
-        this(null, category, title, price, quantity, ean, 0.0, vendor, LocalDateTime.now());
+    public Product(Integer categoryId, String title, int price, int quantity, String ean, String vendor) {
+        this(null, categoryId, title, price, quantity, ean, 0.0, vendor, LocalDateTime.now());
     }
 
-    public Product(Integer id, String category, String title, int price, int quantity,
+    public Product(Integer id, Integer categoryId, String title, int price, int quantity,
                    String ean, double rating, String vendor, LocalDateTime createdAt) {
 
-        validate(category, title, price, quantity);
+        validate(categoryId, title, price, quantity);
 
         this.id = id;
-        this.category = category;
+        this.categoryId = categoryId;
         this.title = title;
         this.price = price;
         this.quantity = quantity;
@@ -37,8 +38,8 @@ public class Product {
         this.createdAt = createdAt;
     }
 
-    private void validate(String category, String title, int price, int quantity) {
-        if (category == null || category.trim().isEmpty()) {
+    private void validate(Integer categoryId, String title, int price, int quantity) {
+        if (categoryId == null || categoryId <= 0) {
             throw new IllegalArgumentException("상품은 반드시 하나의 카테고리에 속해야 합니다.");
         }
         if (title == null || title.trim().isEmpty()) {
@@ -49,13 +50,15 @@ public class Product {
         }
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getResolvedImageUrl() {
-        return "/resources/images/products/" + this.id + ".jpg";
+        return "/resources/images/products/" + this.id + ".jpeg";
     }
 }

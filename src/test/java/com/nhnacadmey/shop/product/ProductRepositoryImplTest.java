@@ -32,7 +32,8 @@ class ProductRepositoryImplTest {
     @Test
     @DisplayName("상품 저장 및 단건 조회 롤백 테스트")
     void saveAndFindById_Success() {
-        Product newProduct = new Product("Gizmo", "테스트 상품", 1000, 10, "12345", "Vendor");
+        Product newProduct = new Product(1, "테스트 상품", 1000, 10, "12345", "Vendor");
+
         int result = productRepository.save(newProduct);
         assertEquals(1, result, "상품이 정상적으로 INSERT 되어야 합니다.");
     }

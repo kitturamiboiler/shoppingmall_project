@@ -1,5 +1,6 @@
 package com.nhnacademy.shoppingmall.category.repository.impl;
 
+import com.nhnacademy.shoppingmall.category.domain.Category;
 import com.nhnacademy.shoppingmall.category.repository.CategoryRepository;
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
 import java.sql.*;
@@ -9,15 +10,22 @@ import java.util.List;
 public class CategoryRepositoryImpl implements CategoryRepository {
 
     @Override
-    public List<String> findAll() {
-        String sql = "SELECT name FROM categories";
-        List<String> list = new ArrayList<>();
+    public List<Category> findAll() {
+        String sql = "SELECT id, name FROM categories";
+        List<Category> list = new ArrayList<>();
         Connection conn = DbConnectionThreadLocal.getConnection();
-        try (PreparedStatement psmt = conn.prepareStatement(sql);
-             ResultSet rs = psmt.executeQuery()) {
-            while (rs.next()) list.add(rs.getString("name"));
-        } catch (SQLException e) { throw new RuntimeException(e); }
-
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Category category = new Category(
+                        rs.getInt("id"),
+                        rs.getString("name")
+                );
+                list.add(category);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return list;
     }
 
@@ -25,9 +33,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public int save(String categoryName) {
         String sql = "INSERT INTO categories(name) VALUES(?)";
         Connection conn = DbConnectionThreadLocal.getConnection();
-        try (PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, categoryName);
-            return psmt.executeUpdate();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, categoryName);
+            return ps.executeUpdate();
         } catch (SQLException e) { throw new RuntimeException(e); }
     }
 
@@ -35,10 +43,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public int update(String oldName, String newName) {
         String sql = "UPDATE categories SET name = ? WHERE name = ?";
         Connection conn = DbConnectionThreadLocal.getConnection();
-        try (PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, newName);
-            psmt.setString(2, oldName);
-            return psmt.executeUpdate();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newName);
+            ps.setString(2, oldName);
+            return ps.executeUpdate();
         } catch (SQLException e) { throw new RuntimeException(e); }
     }
 
@@ -46,9 +54,9 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public int delete(String categoryName) {
         String sql = "DELETE FROM categories WHERE name = ?";
         Connection conn = DbConnectionThreadLocal.getConnection();
-        try (PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, categoryName);
-            return psmt.executeUpdate();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, categoryName);
+            return ps.executeUpdate();
         } catch (SQLException e) { throw new RuntimeException(e); }
     }
 }

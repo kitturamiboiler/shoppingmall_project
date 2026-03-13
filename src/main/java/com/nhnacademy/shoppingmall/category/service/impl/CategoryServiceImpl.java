@@ -1,5 +1,6 @@
 package com.nhnacademy.shoppingmall.category.service.impl;
 
+import com.nhnacademy.shoppingmall.category.domain.Category;
 import com.nhnacademy.shoppingmall.category.repository.CategoryRepository;
 import com.nhnacademy.shoppingmall.category.service.CategoryService;
 import java.util.List;
@@ -11,7 +12,7 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository = categoryRepository;
     }
     @Override
-    public List<String> getCategoryList() {
+    public List<Category> getCategoryList() {
         return categoryRepository.findAll();
     }
     @Override

@@ -40,7 +40,11 @@
             <img src="/resources/no-image.png" alt="product" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
           </td>
 
-          <td><span class="badge bg-info text-dark">${item.category}</span></td>
+          <td>
+            <span class="badge bg-info text-dark">
+              ${item.categoryId}
+            </span>
+          </td>
 
           <td>
             <div class="fw-bold">${item.title}</div>

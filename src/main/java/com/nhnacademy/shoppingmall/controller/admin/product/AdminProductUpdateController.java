@@ -22,7 +22,7 @@ public class AdminProductUpdateController implements BaseController {
         try {
             int id = Integer.parseInt(req.getParameter("id"));
             String title = req.getParameter("title");
-            String category = req.getParameter("category");
+            Integer categoryId = Integer.parseInt(req.getParameter("categoryId"));
             int price = Integer.parseInt(req.getParameter("price"));
             int quantity = Integer.parseInt(req.getParameter("quantity"));
             String vendor = req.getParameter("vendor");
@@ -36,7 +36,7 @@ public class AdminProductUpdateController implements BaseController {
             }
             Product updatedProduct = new Product(
                     id,
-                    category,
+                    categoryId,
                     title,
                     price,
                     quantity,

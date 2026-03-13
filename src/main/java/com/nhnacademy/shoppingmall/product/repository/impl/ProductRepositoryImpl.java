@@ -231,6 +231,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     private Product mapToProduct(ResultSet rs) throws SQLException {
         String categoryName = rs.getString("category_name");
+        int categoryId = rs.getInt("category_id");
 
         if (categoryName == null) {
             categoryName = "미분류";
@@ -238,7 +239,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         return new Product(
                 rs.getInt("id"),
-                categoryName,
+                categoryId,
                 rs.getString("title"),
                 rs.getInt("price"),
                 rs.getInt("quantity"),
