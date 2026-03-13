@@ -10,7 +10,7 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <div class="container-fluid py-2">
-  <h4 class="fw-bold mb-4"><i class="bi bi-cart-check me-2"></i>주문 배송 관리</h4>
+  <h4 class="fw-bold mb-4"><i class="bi bi-cart-check me-2"></i>주문 관리</h4>
 
   <div class="row g-3 mb-4">
     <div class="col-md-3">
