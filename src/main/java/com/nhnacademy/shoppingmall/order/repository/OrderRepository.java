@@ -8,5 +8,8 @@ public interface OrderRepository {
     int save(Order order);
     Optional<Order> findById(int id);
     List<Order> findAllByUserId(String userId, int offset, int pageSize);
-     long countByUserId(String userId);
+    List<Order> findAll(int offset, int pageSize);
+    int deleteByUserId(String userId);
+    long countByUserId(String userId);
+    long countAll();
 }

@@ -6,4 +6,6 @@ import com.nhnacademy.shoppingmall.order.domain.Order;
 public interface OrderService {
     void createOrder(Order order);
     Page<Order> getOrdersByUserId(String userId, int page, int pageSize);
+    Page<Order> getOrders(int page, int pageSize);
+    void deleteOrder(String userId);
 }

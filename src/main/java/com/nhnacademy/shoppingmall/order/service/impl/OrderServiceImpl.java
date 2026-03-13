@@ -27,4 +27,20 @@ public class OrderServiceImpl implements OrderService {
         long totalCount = orderRepository.countByUserId(userId);
         return new Page<>(orderList, totalCount);
     }
+
+    @Override
+    public Page<Order> getOrders(int page, int pageSize) {
+        int currentPage = Math.max(page, 1);
+        int offset = (currentPage - 1) * pageSize;
+        List<Order> orderList = orderRepository.findAll(offset, pageSize);
+        long totalCount = orderRepository.countAll();
+        return new Page<>(orderList, totalCount);
+    }
+
+    @Override
+    public void deleteOrder(String userId) {
+        if(orderRepository.deleteByUserId(userId) == 0){
+            throw new RuntimeException("Not Found Order");
+        }
+    }
 }

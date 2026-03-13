@@ -17,7 +17,7 @@
       <div class="card border-0 shadow-sm bg-primary text-white">
         <div class="card-body">
           <h6 class="card-title opacity-75">전체 주문</h6>
-          <h3 class="fw-bold mb-0">${orderList.size()}건</h3>
+          <h3 class="fw-bold mb-0">${orderPage.totalCount}건</h3>
         </div>
       </div>
     </div>
@@ -37,25 +37,25 @@
       </tr>
       </thead>
       <tbody>
-      <c:forEach var="order" items="${orderList}">
+      <c:forEach var="order" items="${orderPage.content}">
         <tr>
-          <td class="text-center fw-bold text-primary">${order.orderId}</td>
+          <td class="text-center fw-bold text-primary">${order.id}</td>
           <td class="text-muted">
             <fmt:parseDate value="${order.createdAt}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate" type="both" />
             <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd HH:mm" />
           </td>
           <td><span class="badge bg-light text-dark border">${order.userId}</span></td>
-          <td><span class="fw-semibold">${order.productName}</span></td>
+          <td><span class="fw-semibold">${order.productId}</span></td>
           <td class="text-end">${order.quantity}개</td>
           <td class="text-end fw-bold text-danger">
-            <fmt:formatNumber value="${order.totalPrice}" type="currency" currencySymbol="₩" />
+            <fmt:formatNumber value="${order.total}" type="currency" currencySymbol="₩" />
           </td>
           <td class="text-center">
             <span class="badge bg-success">결제완료</span>
           </td>
         </tr>
       </c:forEach>
-      <c:if test="${empty orderList}">
+      <c:if test="${empty orderPage.content}">
         <tr>
           <td colspan="7" class="text-center py-5 text-muted">
             <i class="bi bi-inbox fs-1 d-block mb-3"></i>
@@ -66,4 +66,32 @@
       </tbody>
     </table>
   </div>
+
+  <div class="pagination">
+    <c:if test="${currentPage > 1}">
+      <a href="?page=${currentPage - 1}" class="prev">이전</a>
+    </c:if>
+
+    <c:forEach var="i" begin="1" end="${totalPages}">
+      <c:choose>
+        <c:when test="${i == currentPage}">
+          <span class="page-num active">${i}</span>
+        </c:when>
+        <c:otherwise>
+          <a href="?page=${i}" class="page-num">${i}</a>
+        </c:otherwise>
+      </c:choose>
+    </c:forEach>
+
+    <c:if test="${currentPage < totalPages}">
+      <a href="?page=${currentPage + 1}" class="next">다음</a>
+    </c:if>
+  </div>
 </div>
+
+<style>
+  .pagination { margin-top: 30px; text-align: center; }
+  .page-num { display: inline-block; padding: 5px 12px; margin: 0 3px; border: 1px solid #ddd; color: #333; text-decoration: none; }
+  .page-num.active { background: #333; color: #fff; border-color: #333; }
+  .prev, .next { display: inline-block; padding: 5px 12px; border: 1px solid #ddd; color: #333; text-decoration: none; background: #f4f4f4; }
+</style>

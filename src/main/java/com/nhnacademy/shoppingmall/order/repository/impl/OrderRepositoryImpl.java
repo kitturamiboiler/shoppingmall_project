@@ -61,6 +61,39 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public List<Order> findAll(int offset, int pageSize) {
+        String sql = "SELECT * FROM orders ORDER BY id DESC LIMIT ? OFFSET ?";
+        Connection connection = DbConnectionThreadLocal.getConnection();
+        List<Order> orderList = new ArrayList<>();
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, pageSize);
+            ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    orderList.add(mapToOrder(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Order 목록 조회 실패", e);
+        }
+        return orderList;
+    }
+
+    @Override
+    public int deleteByUserId(String userId) {
+        String sql = "DELETE FROM orders WHERE user_id = ?";
+        Connection connection = DbConnectionThreadLocal.getConnection();
+
+        try(PreparedStatement ps = connection.prepareStatement(sql)){
+            ps.setString(1, userId);
+            return ps.executeUpdate();
+        }catch (SQLException e){
+            throw new RuntimeException("Order 삭제 실패");
+        }
+    }
+
+    @Override
     public Optional<Order> findById(int id) {
         String sql = "SELECT * FROM orders WHERE id = ?";
         Connection connection = DbConnectionThreadLocal.getConnection();
@@ -82,10 +115,26 @@ public class OrderRepositoryImpl implements OrderRepository {
     public long countByUserId(String userId){
         String sql = "SELECT COUNT(*) FROM orders WHERE user_id = ?";
         Connection connection = DbConnectionThreadLocal.getConnection();
-        List<Order> orderList = new ArrayList<>();
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Order 목록 조회 실패", e);
+        }
+        return 0L;
+    }
+
+    @Override
+    public long countAll() {
+        String sql = "SELECT COUNT(*) FROM orders";
+        Connection connection = DbConnectionThreadLocal.getConnection();
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getLong(1);
