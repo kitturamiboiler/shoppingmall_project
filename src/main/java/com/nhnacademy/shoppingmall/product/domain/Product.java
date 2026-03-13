@@ -16,6 +16,7 @@ public class Product {
     private final double rating;
     private final String vendor;
     private final LocalDateTime createdAt;
+    private String categoryName;
 
     @Builder
     public Product(Integer categoryId, String title, int price, int quantity, String ean, String vendor) {
@@ -52,6 +53,10 @@ public class Product {
 
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public void setId(Integer id) {

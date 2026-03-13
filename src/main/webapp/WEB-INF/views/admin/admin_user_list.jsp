@@ -33,9 +33,9 @@
           <td class="fw-bold">${u.userId}</td>
           <td>${u.userName}</td>
           <td>
-                            <span class="badge ${u.userAuth.name() eq 'ROLE_ADMIN' ? 'bg-danger' : 'bg-secondary'}">
-                                ${u.userAuth}
-                            </span>
+            <span class="badge ${u.userAuth.name() eq 'ROLE_ADMIN' ? 'bg-danger' : 'bg-secondary'}">
+                ${u.userAuth}
+            </span>
           </td>
           <td class="text-end fw-bold text-primary">
             <fmt:formatNumber value="${u.userPoint}" type="number"/> P
@@ -44,7 +44,7 @@
           <td class="text-center">
             <button class="btn btn-sm btn-outline-primary me-1">포인트 수정</button>
             <form action="/admin/user/delete.do" method="post" class="d-inline">
-              <input type="hidden" name="userId" value="${u.userId}">
+              <input type="hidden" name="id" value="${u.userId}">
               <button type="submit" class="btn btn-sm btn-outline-danger"
                       onclick="return confirm('이 회원을 탈퇴 처리하시겠습니까?');">탈퇴</button>
             </form>

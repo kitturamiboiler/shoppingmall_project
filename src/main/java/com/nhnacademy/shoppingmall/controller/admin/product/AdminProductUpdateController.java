@@ -60,6 +60,6 @@ public class AdminProductUpdateController implements BaseController {
         String uploadPath = req.getServletContext().getRealPath("") + File.separator + "resources/images/products";
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
-        filePart.write(uploadPath + File.separator + id + ".jpg");
+        filePart.write(uploadPath + File.separator + id + ".jpeg");
     }
 }

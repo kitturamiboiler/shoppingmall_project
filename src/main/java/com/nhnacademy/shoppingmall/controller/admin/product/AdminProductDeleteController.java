@@ -19,7 +19,7 @@ public class AdminProductDeleteController implements BaseController {
         productService.deleteProduct(id);
 
         String uploadPath = req.getServletContext().getRealPath("") + File.separator + "resources/images/products";
-        File imageFile = new File(uploadPath + File.separator + id + ".jpg");
+        File imageFile = new File(uploadPath + File.separator + id + ".jpeg");
         if (imageFile.exists()) {
             imageFile.delete();
         }

@@ -143,6 +143,7 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> findAll() {
         String sql = "SELECT user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at FROM users";
         List<User> userList = new ArrayList<>();
+
         Connection conn = DbConnectionThreadLocal.getConnection();
 
         try (PreparedStatement psmt = conn.prepareStatement(sql);
@@ -152,6 +153,7 @@ public class UserRepositoryImpl implements UserRepository {
                 userList.add(mapToUser(rs));
             }
         } catch (SQLException e) {
+            log.error("회원 전체 조회 실패: {}", e.getMessage());
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("회원 조회 중 DB 에러", e);
         }
