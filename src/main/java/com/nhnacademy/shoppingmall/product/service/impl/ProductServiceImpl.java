@@ -89,9 +89,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void updateStock(int productId, int quantity) {
-        int result = productRepository.updateStock(productId, quantity);
-        if(result == 0){
-            throw new NotEnoughStockException(productId);
-        }
+        productRepository.updateStock(productId, quantity);
+
     }
 }
