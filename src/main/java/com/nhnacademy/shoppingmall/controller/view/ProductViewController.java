@@ -27,13 +27,14 @@ public class ProductViewController implements BaseController {
             return "redirect:/index.do";
         }
 
-        HttpSession session = req.getSession();
+        HttpSession session = req.getSession(true);
         List<Integer> recentProductIds = (List<Integer>) session.getAttribute("recentProducts");
 
         recentProductIds = RecentProductManager.addRecentProduct(recentProductIds, productId);
         session.setAttribute("recentProducts", recentProductIds);
 
         java.util.List<Product> recentProductList = new java.util.ArrayList<>();
+        session.setAttribute("recentProductList", recentProductList);
         if (recentProductIds != null) {
             for (Integer id : recentProductIds) {
                 Product p = productService.getProduct(id);
@@ -42,7 +43,6 @@ public class ProductViewController implements BaseController {
                 }
             }
         }
-        req.setAttribute("recentProductList", recentProductList);
         req.setAttribute("product", product);
 
         return "shop/product/product_view";
