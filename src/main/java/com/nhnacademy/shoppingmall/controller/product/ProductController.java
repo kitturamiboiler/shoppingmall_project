@@ -7,13 +7,10 @@ import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.repository.impl.ProductRepositoryImpl;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
 import com.nhnacademy.shoppingmall.product.service.impl.ProductServiceImpl;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.List;
 
 @Slf4j
 @RequestMapping(method = RequestMapping.Method.GET, value = "/product/list.do")

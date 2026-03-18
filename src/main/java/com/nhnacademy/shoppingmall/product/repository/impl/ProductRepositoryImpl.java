@@ -6,21 +6,29 @@ import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.repository.ProductRepository;
 import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Slf4j
+@Repository
 public class ProductRepositoryImpl implements ProductRepository {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public int save(Product product) {
         Objects.requireNonNull(product, "상품 객체는 null일 수 없습니다.");
         String sql = "INSERT INTO products (category_id, title, price, quantity, ean, rating, vendor, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        Connection conn = DbConnectionThreadLocal.getConnection();
+        Connection conn = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement psmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             psmt.setLong(1, product.getCategoryId());
             psmt.setString(2, product.getTitle());
@@ -39,6 +47,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.error("상품 등록 실패: {}", e.getMessage(), e);
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("상품 저장 중 오류 발생", e);
+        }finally {
+            DataSourceUtils.releaseConnection(conn, dataSource);
         }
     }
 
@@ -48,7 +58,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 "FROM products p " +
                 "LEFT JOIN categories c ON p.category_id = c.id " +
                 "WHERE p.id = ?";
-        Connection conn = DbConnectionThreadLocal.getConnection();
+        Connection conn = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setInt(1, id);
             try (ResultSet rs = psmt.executeQuery()) {
@@ -58,6 +68,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.error("상품 조회 실패 {}: {}", id, e.getMessage(), e);
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("상품 조회 중 오류 발생", e);
+        }finally {
+            DataSourceUtils.releaseConnection(conn, dataSource);
         }
         return null;
     }
@@ -69,7 +81,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 "LEFT JOIN categories c ON p.category_id = c.id " +
                 "ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
         List<Product> productList = new ArrayList<>();
-        Connection conn = DbConnectionThreadLocal.getConnection();
+        Connection conn = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setInt(1, Math.max(1, limit));
             psmt.setInt(2, Math.max(0, offset));
@@ -80,6 +92,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.error("상품 목록 조회 실패: {}", e.getMessage(), e);
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("목록 조회 중 오류 발생", e);
+        }finally {
+            DataSourceUtils.releaseConnection(conn, dataSource);
         }
         return productList;
     }
@@ -92,7 +106,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 "WHERE c.name = ? " +
                 "ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
         List<Product> productList = new ArrayList<>();
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, categoryName);
             ps.setInt(2, Math.max(1, limit));
@@ -103,6 +117,8 @@ public class ProductRepositoryImpl implements ProductRepository {
         } catch (SQLException e) {
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("카테고리별 상품 조회 중 오류 발생", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return productList;
     }
@@ -113,7 +129,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 "JOIN categories c ON p.category_id = c.id " +
                 "ORDER BY category_name ASC";
         List<String> categories = new ArrayList<>();
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -123,6 +139,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.error("카테고리 목록 조회 실패: {}", e.getMessage());
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("카테고리 조회 중 오류 발생", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return categories;
     }
@@ -135,7 +153,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 "WHERE p.title LIKE ? " +
                 "ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
         List<Product> productList = new ArrayList<>();
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, "%" + title + "%");
             ps.setInt(2, Math.max(1, limit));
@@ -147,6 +165,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.error("상품명 검색 중 오류 발생: {}", e.getMessage());
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("상품 검색 실패", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return productList;
     }
@@ -154,7 +174,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public int update(Product product) {
         String sql = "UPDATE products SET category_id=?, title=?, price=?, quantity=?, ean=?, vendor=? WHERE id=?";
-        Connection conn = DbConnectionThreadLocal.getConnection();
+        Connection conn = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setLong(1, product.getCategoryId());
             psmt.setString(2, product.getTitle());
@@ -168,13 +188,15 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.error("상품 수정 실패 (ID: {}): {}", product.getId(), e.getMessage(), e);
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("상품 수정 중 오류 발생", e);
+        }finally {
+            DataSourceUtils.releaseConnection(conn, dataSource);
         }
     }
 
     @Override
     public int deleteById(int id) {
         String sql = "DELETE FROM products WHERE id = ?";
-        Connection conn = DbConnectionThreadLocal.getConnection();
+        Connection conn = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setInt(1, id);
             return psmt.executeUpdate();
@@ -182,19 +204,23 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.error("상품 삭제 실패 (ID: {}): {}", id, e.getMessage(), e);
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("상품 삭제 중 오류 발생", e);
+        }finally {
+            DataSourceUtils.releaseConnection(conn, dataSource);
         }
     }
 
     @Override
     public int countAll() {
         String sql = "SELECT count(*) FROM products";
-        Connection conn = DbConnectionThreadLocal.getConnection();
+        Connection conn = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement psmt = conn.prepareStatement(sql);
              ResultSet rs = psmt.executeQuery()) {
             if (rs.next()) return rs.getInt(1);
         } catch (SQLException e) {
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("개수 조회 실패", e);
+        }finally {
+            DataSourceUtils.releaseConnection(conn, dataSource);
         }
         return 0;
     }
@@ -221,7 +247,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public void updateStock(int productId, int quantity) {
         String sql = "UPDATE products SET quantity = quantity - ? WHERE id = ? AND quantity >= ?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, quantity);
             ps.setInt(2, productId);
@@ -229,6 +255,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             if (ps.executeUpdate() == 0) throw new RuntimeException("재고 부족 (ID: " + productId + ")");
         } catch (SQLException e) {
             throw new RuntimeException("재고 업데이트 오류", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 }

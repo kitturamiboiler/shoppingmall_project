@@ -5,7 +5,11 @@ import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLoca
 import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +18,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
+@Repository
 public class UserRepositoryImpl implements UserRepository {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public Optional<User> findByUserIdAndUserPassword(String userId, String userPassword) {
@@ -23,7 +31,7 @@ public class UserRepositoryImpl implements UserRepository {
          */
         String sql = "select user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at " +
                 "from users where user_id=? and user_password=?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userId);
@@ -36,6 +44,8 @@ public class UserRepositoryImpl implements UserRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return Optional.empty();
     }
@@ -44,7 +54,7 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findById(String userId) {
         //todo#3-2 회원조회
         String sql = "select user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at from users where user_id=?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -54,6 +64,8 @@ public class UserRepositoryImpl implements UserRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return Optional.empty();
     }
@@ -62,7 +74,7 @@ public class UserRepositoryImpl implements UserRepository {
     public int save(User user) {
         //todo#3-3 회원등록, executeUpdate()을 반환합니다.
         String sql = "insert into users(user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at) values (?, ?, ?, ?, ?, ?, ?, ?)";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getUserId());
             ps.setString(2, user.getUserName());
@@ -75,6 +87,8 @@ public class UserRepositoryImpl implements UserRepository {
             return ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 
@@ -82,12 +96,14 @@ public class UserRepositoryImpl implements UserRepository {
     public int deleteByUserId(String userId) {
         //todo#3-4 회원삭제, executeUpdate()을 반환합니다.
         String sql = "delete from users where user_id=?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userId);
             return ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 
@@ -95,7 +111,7 @@ public class UserRepositoryImpl implements UserRepository {
     public int update(User user) {
         //todo#3-5 회원수정, executeUpdate()을 반환합니다.
         String sql = "update users set user_name=?, user_password=?, user_birth=?, user_auth=?, user_point=? where user_id=?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getUserName());
             ps.setString(2, user.getUserPassword());
@@ -106,6 +122,8 @@ public class UserRepositoryImpl implements UserRepository {
             return ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 
@@ -113,13 +131,15 @@ public class UserRepositoryImpl implements UserRepository {
     public int updateLatestLoginAtByUserId(String userId, LocalDateTime latestLoginAt) {
         //todo#3-6, 마지막 로그인 시간 업데이트, executeUpdate()을 반환합니다.
         String sql = "update users set latest_login_at=? where user_id=?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(latestLoginAt));
             ps.setString(2, userId);
             return ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 
@@ -127,7 +147,7 @@ public class UserRepositoryImpl implements UserRepository {
     public int countByUserId(String userId) {
         //todo#3-7 userId와 일치하는 회원의 count를 반환합니다.
         String sql = "select count(*) from users where user_id=?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -135,6 +155,8 @@ public class UserRepositoryImpl implements UserRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return 0;
     }
@@ -144,7 +166,7 @@ public class UserRepositoryImpl implements UserRepository {
         String sql = "SELECT user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at FROM users";
         List<User> userList = new ArrayList<>();
 
-        Connection conn = DbConnectionThreadLocal.getConnection();
+        Connection conn = DataSourceUtils.getConnection(dataSource);
 
         try (PreparedStatement psmt = conn.prepareStatement(sql);
              ResultSet rs = psmt.executeQuery()) {
@@ -156,6 +178,8 @@ public class UserRepositoryImpl implements UserRepository {
             log.error("회원 전체 조회 실패: {}", e.getMessage());
             DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException("회원 조회 중 DB 에러", e);
+        }finally {
+            DataSourceUtils.releaseConnection(conn, dataSource);
         }
         return userList;
     }

@@ -49,7 +49,7 @@
             <i class="bi bi-cart-plus"></i> 장바구니 담기
           </button>
         </form>
-        <a href="javascript:void(0);" onclick="location.href=document.referrer;" class="btn btn-outline-secondary">이전 페이지로</a>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">이전 페이지로</a>
       </div>
     </div>
   </div>

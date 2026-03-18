@@ -1,7 +1,5 @@
 package com.nhnacademy.shoppingmall.controller.index;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
-import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
 import com.nhnacademy.shoppingmall.product.service.impl.ProductServiceImpl;
 import com.nhnacademy.shoppingmall.product.repository.impl.ProductRepositoryImpl;
@@ -10,20 +8,27 @@ import com.nhnacademy.shoppingmall.product.domain.Product;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping(method = RequestMapping.Method.GET, value = {"/index.do"})
-public class IndexController implements BaseController {
+@Controller
+public class IndexController {
+    @Autowired
+    private ProductService productService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        ProductService productService = (ProductService) req.getServletContext().getAttribute("productService");
-        String category = req.getParameter("category");
-        String searchKeyword = req.getParameter("searchKeyword");
+    @RequestMapping(value = {"/index.do", "/"}, method = RequestMethod.GET)
+    public String execute(Model model, HttpSession session,
+                          @RequestParam(value = "category", required = false) String category,
+                          @RequestParam(value = "searchKeyword", required = false) String searchKeyword) {
         List<String> categoryList = productService.getAllCategories();
-        req.setAttribute("categoryList", categoryList);
+        model.addAttribute("categoryList", categoryList);
         List<Product> productList = new ArrayList<>();
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
             productList = productService.getProductsByTitle(searchKeyword, 0, 100);
@@ -35,11 +40,10 @@ public class IndexController implements BaseController {
                 productList = (List<Product>) productPage.getContent();
             }
         }
-        req.setAttribute("productList", productList);
-        req.setAttribute("selectedCategory", category);
-        req.setAttribute("searchKeyword", searchKeyword);
+        model.addAttribute("productList", productList);
+        model.addAttribute("selectedCategory", category);
+        model.addAttribute("searchKeyword", searchKeyword);
 
-        HttpSession session = req.getSession();
         List<Integer> recentIds = (List<Integer>) session.getAttribute("recentProducts");
         List<Product> recentProductList = new ArrayList<>();
 
@@ -52,7 +56,10 @@ public class IndexController implements BaseController {
                 if (recentProductList.size() >= 5) break;
             }
         }
-        req.setAttribute("recentProductList", recentProductList);
-        return "shop/main/index";
+        model.addAttribute("recentProductList", recentProductList);
+
+        model.addAttribute("layout_content_holder", "/WEB-INF/views/shop/main/index.jsp");
+        return "layout/shop";
+
     }
 }

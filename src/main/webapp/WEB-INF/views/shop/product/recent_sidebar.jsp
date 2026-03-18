@@ -47,14 +47,14 @@
   </div>
   <div class="offcanvas-body">
     <c:choose>
-      <c:when test="${empty sessionScope.recentProductList}">
+      <c:when test="${empty recentProductList}">
         <div class="text-center mt-5 text-muted">
           <i class="bi bi-info-circle fs-1"></i>
           <p class="mt-2">기록이 없습니다.</p>
         </div>
       </c:when>
       <c:otherwise>
-        <c:forEach var="recent" items="${sessionScope.recentProductList}">
+        <c:forEach var="recent" items="${recentProductList}">
           <div class="card mb-3 shadow-sm recent-card">
             <div class="row g-0 align-items-center">
               <div class="col-4 p-2 text-center">

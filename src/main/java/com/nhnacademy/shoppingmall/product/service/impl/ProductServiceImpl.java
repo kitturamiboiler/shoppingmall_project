@@ -5,19 +5,27 @@ import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.exception.NotEnoughStockException;
 import com.nhnacademy.shoppingmall.product.repository.ProductRepository;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Service
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
     private static final int PAGE_SIZE = 10;
 
+    @Autowired
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
+
     @Override
+    @Transactional(readOnly = true)
     public Product getProduct(int id) {
         Product product = productRepository.findById(id);
         if (Objects.isNull(product)) {
@@ -25,7 +33,9 @@ public class ProductServiceImpl implements ProductService {
         }
         return product;
     }
+
     @Override
+    @Transactional(readOnly = true)
     public Page<Product> getProductPage(int page) {
         int safePage = Math.max(1, page);
         int totalCount = productRepository.countAll();
@@ -41,6 +51,7 @@ public class ProductServiceImpl implements ProductService {
         return new Page<>(content, totalCount);
     }
     @Override
+    @Transactional
     public void saveProduct(Product product) {
         int result = productRepository.save(product);
         if (result < 1) {
@@ -48,6 +59,7 @@ public class ProductServiceImpl implements ProductService {
         }
     }
     @Override
+    @Transactional
     public void updateProduct(Product product) {
         if (Objects.isNull(product.getId())) {
             throw new RuntimeException("수정할 상품의 ID가 없습니다.");
@@ -59,6 +71,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(int id) {
         int result = productRepository.deleteById(id);
         if (result < 1) {
@@ -67,11 +80,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getAllCategories() {
         return productRepository.getProductsByCategory();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getProductsByCategory(String category, int offset, int limit) {
         if (category == null || category.trim().isEmpty() || category.equals("ALL")) {
             return productRepository.findAll(offset, limit);
@@ -80,6 +95,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getProductsByTitle(String title, int offset, int limit) {
         if (title == null || title.trim().isEmpty()) {
             return productRepository.findAll(offset, limit);
@@ -88,6 +104,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void updateStock(int productId, int quantity) {
         productRepository.updateStock(productId, quantity);
 

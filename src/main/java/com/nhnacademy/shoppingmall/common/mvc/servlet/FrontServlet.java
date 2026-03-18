@@ -22,7 +22,6 @@ import java.io.IOException;
         maxRequestSize = 1024 * 1024 * 50     // 50MB
 )
 @Slf4j
-@WebServlet(name = "frontServlet",urlPatterns = {"*.do"})
 public class FrontServlet extends HttpServlet {
     private ControllerFactory controllerFactory;
     private ViewResolver viewResolver;

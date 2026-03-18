@@ -3,17 +3,26 @@ package com.nhnacademy.shoppingmall.order.repository.impl;
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
 import com.nhnacademy.shoppingmall.order.domain.Order;
 import com.nhnacademy.shoppingmall.order.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class OrderRepositoryImpl implements OrderRepository {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public int save(Order order) {
         String sql = "INSERT INTO orders(user_id, product_id, quantity, total, created_at) VALUES(?, ?, ?, ?, ?)";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, order.getUserId());
@@ -35,6 +44,8 @@ public class OrderRepositoryImpl implements OrderRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Order 저장 실패", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return 0;
     }
@@ -42,7 +53,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Order> findAllByUserId(String userId, int offset, int pageSize) {
         String sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         List<Order> orderList = new ArrayList<>();
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -56,6 +67,8 @@ public class OrderRepositoryImpl implements OrderRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Order 목록 조회 실패", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return orderList;
     }
@@ -63,7 +76,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Order> findAll(int offset, int pageSize) {
         String sql = "SELECT * FROM orders ORDER BY id DESC LIMIT ? OFFSET ?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
         List<Order> orderList = new ArrayList<>();
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -76,6 +89,8 @@ public class OrderRepositoryImpl implements OrderRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Order 목록 조회 실패", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return orderList;
     }
@@ -83,20 +98,22 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public int deleteByUserId(String userId) {
         String sql = "DELETE FROM orders WHERE user_id = ?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
 
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.setString(1, userId);
             return ps.executeUpdate();
         }catch (SQLException e){
             throw new RuntimeException("Order 삭제 실패");
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 
     @Override
     public Optional<Order> findById(int id) {
         String sql = "SELECT * FROM orders WHERE id = ?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -107,6 +124,8 @@ public class OrderRepositoryImpl implements OrderRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Order 단건 조회 실패", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return Optional.empty();
     }
@@ -114,7 +133,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public long countByUserId(String userId){
         String sql = "SELECT COUNT(*) FROM orders WHERE user_id = ?";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, userId);
@@ -125,6 +144,8 @@ public class OrderRepositoryImpl implements OrderRepository {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Order 목록 조회 실패", e);
+        }finally {
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
         return 0L;
     }
@@ -132,7 +153,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public long countAll() {
         String sql = "SELECT COUNT(*) FROM orders";
-        Connection connection = DbConnectionThreadLocal.getConnection();
+        Connection connection = DataSourceUtils.getConnection(dataSource);
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             try (ResultSet rs = ps.executeQuery()) {
