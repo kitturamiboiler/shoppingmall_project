@@ -72,7 +72,7 @@
                 <c:forEach var="product" items="${productList}" end="7">
                     <div class="col">
                         <div class="card h-100 border-0 shadow-sm product-card"
-                             onclick="location.href='/product/view.do?id=${product.id}'" style="cursor:pointer;">
+                             onclick="location.href='/product/view.do?productId=${product.id}'" style="cursor:pointer;">
 
                             <div class="product-img-wrapper text-center">
                                 <img src="${product.resolvedImageUrl}"

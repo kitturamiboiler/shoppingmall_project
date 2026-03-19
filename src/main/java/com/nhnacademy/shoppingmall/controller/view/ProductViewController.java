@@ -1,6 +1,5 @@
 package com.nhnacademy.shoppingmall.controller.view;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.common.util.RecentProductManager;
 import com.nhnacademy.shoppingmall.product.domain.Product;
@@ -8,17 +7,28 @@ import com.nhnacademy.shoppingmall.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 //최근 본 상품
-@RequestMapping(method = RequestMapping.Method.GET, value = "/product/view.do")
-public class ProductViewController implements BaseController {
+@Controller
+public class ProductViewController{
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        ProductService productService = (ProductService) req.getServletContext().getAttribute("productService");
-        String idStr = req.getParameter("productId");
+    private final ProductService productService;
+
+    @Autowired
+    public ProductViewController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @RequestMapping(value = "/product/view.do", method = RequestMethod.GET)
+    public String execute(Model model, @RequestParam("productId") String idStr, HttpSession session) {
         if (idStr == null) return "redirect:/index.do";
 
         int productId = Integer.parseInt(idStr);
@@ -27,7 +37,6 @@ public class ProductViewController implements BaseController {
             return "redirect:/index.do";
         }
 
-        HttpSession session = req.getSession();
         List<Integer> recentProductIds = (List<Integer>) session.getAttribute("recentProducts");
 
         recentProductIds = RecentProductManager.addRecentProduct(recentProductIds, productId);
@@ -42,8 +51,8 @@ public class ProductViewController implements BaseController {
                 }
             }
         }
-        req.setAttribute("recentProductList", recentProductList);
-        req.setAttribute("product", product);
+        model.addAttribute("recentProductList", recentProductList);
+        model.addAttribute("product", product);
 
         return "shop/product/product_view";
     }

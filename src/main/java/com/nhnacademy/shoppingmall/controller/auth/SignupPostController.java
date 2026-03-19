@@ -1,6 +1,5 @@
 package com.nhnacademy.shoppingmall.controller.auth;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
 import com.nhnacademy.shoppingmall.user.domain.User;
@@ -10,35 +9,40 @@ import com.nhnacademy.shoppingmall.user.service.UserService;
 import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@RequestMapping(method = RequestMapping.Method.POST,value = "/signupAction.do")
-public class SignupPostController implements BaseController {
+@Controller
+public class SignupPostController{
 
-    private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
+    private final UserService userService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        String userId = req.getParameter("user_id");
-        String userName = req.getParameter("user_name");
-        String userPassword = req.getParameter("user_password");
-        String userBirth = req.getParameter("user_birth");
+    @Autowired
+    public SignupPostController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @RequestMapping(value = {"/signupAction.do"}, method = RequestMethod.POST)
+    public String execute(@RequestParam("user_id") String userId,
+                          @RequestParam("user_name") String userName,
+                          @RequestParam("user_password") String userPassword,
+                          @RequestParam("user_birth") String userBirth,
+                          Model model) {
         User user = new User(userId, userName, userPassword, userBirth, User.Auth.ROLE_USER,
                 1_000_000, LocalDateTime.now(), null);
 
         try {
-            DbConnectionThreadLocal.initialize();
             userService.saveUser(user);
         } catch (Exception e) {
-            DbConnectionThreadLocal.setSqlError(true);
-            if(e instanceof UserAlreadyExistsException){
-                req.setAttribute("errorMessage", e.getMessage());
-                return "shop/signup/signup_form";
-            }
-        } finally {
-            DbConnectionThreadLocal.reset();
+            model.addAttribute("errorMessage", e.getMessage());
+            return "shop/signup/signup_form";
         }
 
         return "shop/login/login_form";

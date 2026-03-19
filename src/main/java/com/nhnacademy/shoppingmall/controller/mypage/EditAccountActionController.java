@@ -1,6 +1,5 @@
 package com.nhnacademy.shoppingmall.controller.mypage;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.user.exception.UserNotFoundException;
@@ -10,29 +9,42 @@ import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 
-@RequestMapping(method = RequestMapping.Method.POST,value = "/mypage/editAccountAction.do")
-public class EditAccountActionController implements BaseController {
+@Controller
+public class EditAccountActionController {
 
-    private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
+    private final UserService userService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        HttpSession session = req.getSession(false);
+    @Autowired
+    public EditAccountActionController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @RequestMapping(value = {"/mypage/editAccountAction.do"}, method = RequestMethod.POST)
+    public String execute(@RequestParam("user_name") String editName,
+                          @RequestParam("user_password") String editPassword,
+                          @RequestParam("user_birth") String editBirth,
+                          Model model, HttpSession session) {
         User user = (User)session.getAttribute("user");
-        String editName = req.getParameter("user_name");
-        String editPassword = req.getParameter("user_password");
-        String editBirth = req.getParameter("user_birth");
+        if(user == null){
+            model.addAttribute("message", "세션이 만료되었습니다.");
+        }else {
+            user.setUserName(editName);
+            user.setUserPassword(editPassword);
+            user.setUserBirth(editBirth);
 
-        user.setUserName(editName);
-        user.setUserPassword(editPassword);
-        user.setUserBirth(editBirth);
-
-        userService.updateUser(user);
-        session.setAttribute("user", user);
-        req.setAttribute("message", "회원 정보 수정 완료!");
+            userService.updateUser(user);
+            session.setAttribute("user", user);
+            model.addAttribute("message", "회원 정보 수정 완료!");
+        }
 
         return "common/message";
     }

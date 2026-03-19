@@ -9,35 +9,43 @@ import com.nhnacademy.shoppingmall.user.repository.impl.UserRepositoryImpl;
 import com.nhnacademy.shoppingmall.user.service.UserService;
 import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Slf4j
 public class PointChannelRequest extends ChannelRequest {
     private final String userId;
     private final int totalAmount;
-    private static final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
-    private static final PointHistoryService pointHistoryService = new PointHistoryServiceImpl(new PointHistoryRepositoryImpl());
+    private final UserService userService;
+    private final PointHistoryService pointHistoryService;
+    private final TransactionTemplate transactionTemplate;
     private static final String POINT_REASON = "상품 구매 적립(10%)";
 
-    public PointChannelRequest(String userId, int totalAmount) {
+    public PointChannelRequest(String userId, int totalAmount, UserService userService,
+                               PointHistoryService pointHistoryService, TransactionTemplate transactionTemplate) {
         this.userId = userId;
         this.totalAmount = totalAmount;
+        this.userService = userService;
+        this.pointHistoryService = pointHistoryService;
+        this.transactionTemplate = transactionTemplate;
     }
     @Override
     public void execute() {
-        DbConnectionThreadLocal.initialize();
 
-        try {
-            log.debug("포인트 적립 - 사용자: {}, 주문금액: {}", userId, totalAmount);
-            int pointToAccumulate = (int) (totalAmount * 0.1);
-            userService.updateUserPoint(userId, pointToAccumulate);
-            pointHistoryService.recordHistory(userId, pointToAccumulate, POINT_REASON);
-            log.debug("포인트 적립 완료- 사용자: {}, 적립포인트: {}", userId, pointToAccumulate);
-        } catch (Exception e) {
-            log.error("포인트 적립 중 오류 발생 - 사용자: {}, 금액: {}, 사유: {}",
-                    userId, totalAmount, e.getMessage());
-        } finally {
-            DbConnectionThreadLocal.reset();
-            log.debug("pointChannel 커넥션 반납 완료");
-        }
+        transactionTemplate.execute(status -> {
+            try {
+                log.debug("포인트 적립 - 사용자: {}, 주문금액: {}", userId, totalAmount);
+                int pointToAccumulate = (int) (totalAmount * 0.1);
+                userService.updateUserPoint(userId, pointToAccumulate);
+                pointHistoryService.recordHistory(userId, pointToAccumulate, POINT_REASON);
+                log.debug("포인트 적립 완료- 사용자: {}, 적립포인트: {}", userId, pointToAccumulate);
+            } catch (Exception e) {
+                log.error("포인트 적립 중 오류 발생 - 사용자: {}, 금액: {}, 사유: {}",
+                        userId, totalAmount, e.getMessage());
+            } finally {
+                log.debug("pointChannel 커넥션 반납 완료");
+            }
+            return null;
+        });
     }
 }

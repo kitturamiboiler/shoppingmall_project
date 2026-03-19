@@ -1,6 +1,5 @@
 package com.nhnacademy.shoppingmall.controller.mypage;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.order.repository.impl.OrderRepositoryImpl;
 import com.nhnacademy.shoppingmall.order.service.OrderService;
@@ -15,29 +14,41 @@ import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Objects;
 
-@RequestMapping(method = RequestMapping.Method.GET,value = "/mypage/deleteAccount.do")
-public class DeleteAccountController implements BaseController {
+@Controller
+public class DeleteAccountController{
 
-    private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
-    private final PointHistoryService pointHistoryService = new PointHistoryServiceImpl(new PointHistoryRepositoryImpl());
-    private final OrderService orderService = new OrderServiceImpl(new OrderRepositoryImpl());
+    private final UserService userService;
+    private final PointHistoryService pointHistoryService;
+    private final OrderService orderService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        HttpSession session = req.getSession(false);
-        if(Objects.isNull(session)) {
-            req.setAttribute("message", "세션이 만료되었습니다.");
+    @Autowired
+    public DeleteAccountController(UserService userService, PointHistoryService pointHistoryService, OrderService orderService) {
+        this.userService = userService;
+        this.pointHistoryService = pointHistoryService;
+        this.orderService = orderService;
+    }
+
+    @RequestMapping(value = {"/mypage/deleteAccount.do"}, method = RequestMethod.GET)
+    public String execute(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if(Objects.isNull(user)) {
+            model.addAttribute("message", "세션이 만료되었습니다.");
         }else {
-            User user = (User) session.getAttribute("user");
             pointHistoryService.deleteHistory(user.getUserId());
             orderService.deleteOrder(user.getUserId());
             userService.deleteUser(user.getUserId());
             session.invalidate();
-            req.setAttribute("message", "회원 탈퇴가 완료되었습니다.\r\n이용해주셔서 감사합니다.");
+            model.addAttribute("message", "회원 탈퇴가 완료되었습니다.\r\n이용해주셔서 감사합니다.");
         }
+
         return "common/message";
     }
 }

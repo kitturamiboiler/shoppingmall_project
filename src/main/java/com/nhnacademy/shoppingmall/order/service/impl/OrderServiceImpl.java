@@ -48,8 +48,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void deleteOrder(String userId) {
-        if(orderRepository.deleteByUserId(userId) == 0){
-            throw new RuntimeException("Not Found Order");
-        }
+        orderRepository.deleteByUserId(userId);
     }
 }

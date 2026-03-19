@@ -1,21 +1,24 @@
 package com.nhnacademy.shoppingmall.controller.cart;
 
 import com.nhnacademy.shoppingmall.cart.domain.Cart;
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(method = RequestMapping.Method.POST, value = "/cart/delete.do")
-public class CartDeleteController implements BaseController {
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        String productIdStr = req.getParameter("productId");
-        HttpSession httpSession = req.getSession(false);
+@Controller
+public class CartDeleteController {
 
-        if (productIdStr != null && httpSession != null) {
-            Cart cart = (Cart) httpSession.getAttribute("cart");
+    @RequestMapping(value = "/cart/delete.do", method = RequestMethod.POST)
+    public String execute(@RequestParam(name = "productId", required = false) String productIdStr,
+                          HttpSession session) {
+
+        if (productIdStr != null) {
+            Cart cart = (Cart) session.getAttribute("cart");
             if (cart != null) {
                 cart.removeItem(Integer.parseInt(productIdStr));
             }

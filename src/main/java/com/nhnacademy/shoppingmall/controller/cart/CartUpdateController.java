@@ -1,7 +1,6 @@
 package com.nhnacademy.shoppingmall.controller.cart;
 
 import com.nhnacademy.shoppingmall.cart.domain.Cart;
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
@@ -11,21 +10,30 @@ import com.nhnacademy.shoppingmall.product.repository.impl.ProductRepositoryImpl
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(method = RequestMapping.Method.POST, value = "/cart/update.do")
-public class CartUpdateController implements BaseController {
-    private final ProductService productService = new ProductServiceImpl(new ProductRepositoryImpl());
+@Controller
+public class CartUpdateController{
+    private final ProductService productService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        String productIdStr = req.getParameter("productId");
-        String quantityStr = req.getParameter("quantity");
+    @Autowired
+    public CartUpdateController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @RequestMapping(value = "/cart/update.do", method = RequestMethod.POST)
+    public String execute(HttpSession session,
+                          @RequestParam(name = "productId") String productIdStr,
+                          @RequestParam(name = "quantity") String quantityStr) {
         try {
             int productId = Integer.parseInt(productIdStr);
             int quantity = Integer.parseInt(quantityStr);
 
-            HttpSession session = req.getSession(false);
-            if (session != null && session.getAttribute("cart") != null) {
+            if (session.getAttribute("cart") != null) {
                 Cart cart = (Cart) session.getAttribute("cart");
                 Product product = productService.getProduct(productId);
                 if (product != null) {

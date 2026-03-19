@@ -1,7 +1,6 @@
 package com.nhnacademy.shoppingmall.controller.cart;
 
 import com.nhnacademy.shoppingmall.cart.domain.Cart;
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.repository.impl.ProductRepositoryImpl;
@@ -10,14 +9,24 @@ import com.nhnacademy.shoppingmall.product.service.impl.ProductServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(method = RequestMapping.Method.POST, value = "/cart/add.do")
-public class CartAddController implements BaseController {
-    private final ProductService productService = new ProductServiceImpl(new ProductRepositoryImpl());
+@Controller
+public class CartAddController{
+    private final ProductService productService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        String productIdStr = req.getParameter("productId");
+    @Autowired
+    public CartAddController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @RequestMapping(value = "/cart/add.do", method = RequestMethod.POST)
+    public String execute(HttpSession session,
+                          @RequestParam(name = "productId", required = false) String productIdStr) {
 
         if (productIdStr == null || productIdStr.trim().isEmpty()) {
             return "redirect:/product/list.do";
@@ -25,11 +34,10 @@ public class CartAddController implements BaseController {
 
         try {
             int productId = Integer.parseInt(productIdStr);
-            HttpSession httpSession = req.getSession(true);
-            Cart cart = (Cart) httpSession.getAttribute("cart");
+            Cart cart = (Cart) session.getAttribute("cart");
             if (cart == null) {
                 cart = new Cart();
-                httpSession.setAttribute("cart", cart);
+                session.setAttribute("cart", cart);
             }
             Product product = productService.getProduct(productId);
             if (product == null) {

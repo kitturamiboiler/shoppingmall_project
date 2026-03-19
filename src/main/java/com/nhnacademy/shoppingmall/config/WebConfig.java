@@ -1,16 +1,19 @@
 package com.nhnacademy.shoppingmall.config;
 
 import com.nhnacademy.shoppingmall.RootBase;
+import com.nhnacademy.shoppingmall.controller.LayoutInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+@Configuration
 @EnableWebMvc
+@Import(RootConfig.class)
 @ComponentScan(
         basePackageClasses = {RootBase.class},
         includeFilters = @ComponentScan.Filter(
@@ -20,6 +23,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
         useDefaultFilters = false
 )
 public class WebConfig implements WebMvcConfigurer {
+
+    private final LayoutInterceptor layoutInterceptor = new LayoutInterceptor();
 
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
@@ -32,5 +37,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(layoutInterceptor)
+                .addPathPatterns("/**/*.do") // .do로 끝나는 모든 요청에 적용
+                .excludePathPatterns("/resources/**"); // 정적 파일은 제외
     }
 }

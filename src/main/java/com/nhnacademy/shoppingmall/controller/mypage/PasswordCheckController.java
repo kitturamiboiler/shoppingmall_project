@@ -1,15 +1,18 @@
 package com.nhnacademy.shoppingmall.controller.mypage;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping(method = RequestMapping.Method.GET,value = "/mypage/passwordCheck.do")
-public class PasswordCheckController implements BaseController {
+@Controller
+public class PasswordCheckController{
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
+    @RequestMapping(value = {"/mypage/passwordCheck.do"}, method = RequestMethod.GET)
+    public String execute() {
         return "shop/mypage/password_check";
     }
 }

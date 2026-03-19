@@ -20,8 +20,14 @@ import java.util.List;
 
 @Controller
 public class IndexController {
+
+    private final ProductService productService;
+
     @Autowired
-    private ProductService productService;
+    public IndexController(ProductService productService) {
+        this.productService = productService;
+    }
+
 
     @RequestMapping(value = {"/index.do", "/"}, method = RequestMethod.GET)
     public String execute(Model model, HttpSession session,
@@ -58,8 +64,7 @@ public class IndexController {
         }
         model.addAttribute("recentProductList", recentProductList);
 
-        model.addAttribute("layout_content_holder", "/WEB-INF/views/shop/main/index.jsp");
-        return "layout/shop";
+        return "shop/main/index";
 
     }
 }
