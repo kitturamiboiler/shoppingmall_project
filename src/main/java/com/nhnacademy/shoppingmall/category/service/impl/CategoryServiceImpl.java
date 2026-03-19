@@ -26,12 +26,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void modifyCategory(String oldName, String newName) {
         if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("카테고리 이름은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("카테고리 이름은 비어있을수 없습니다.");
         }
-        if (categoryRepository.findAll().contains(newName)) {
+        boolean isDuplicate = categoryRepository.findAll().stream()
+                .anyMatch(category -> category.getCategoryName().equals(newName));
+
+        if (isDuplicate){
             throw new IllegalStateException("이미 존재하는 카테고리 이름입니다.");
         }
-
         categoryRepository.update(oldName, newName);
     }
 }

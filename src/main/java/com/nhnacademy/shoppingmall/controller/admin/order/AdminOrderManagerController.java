@@ -1,4 +1,4 @@
-package com.nhnacademy.shoppingmall.controller.admin.Order;
+package com.nhnacademy.shoppingmall.controller.admin.order;
 
 import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
@@ -8,8 +8,6 @@ import com.nhnacademy.shoppingmall.order.domain.Order;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 @RequestMapping(method = RequestMapping.Method.GET, value = "/admin/order/manager.do")
