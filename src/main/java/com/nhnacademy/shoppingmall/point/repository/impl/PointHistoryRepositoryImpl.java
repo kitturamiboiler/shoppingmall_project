@@ -38,7 +38,6 @@ public class PointHistoryRepositoryImpl implements PointHistoryRepository {
     @Override
     public List<PointHistory> findAllByUserId(String userId, int offset, int limit) {
         Connection connection = DataSourceUtils.getConnection(dataSource);
-        // [제약] 최근 사용 내역 순 (DESC) + 페이징 (LIMIT/OFFSET)
         String sql = "SELECT * FROM point_history WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
 
         try (PreparedStatement psmt = connection.prepareStatement(sql)) {
