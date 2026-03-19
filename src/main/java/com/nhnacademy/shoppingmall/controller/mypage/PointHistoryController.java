@@ -1,15 +1,10 @@
-package com.nhnacademy.shoppingmall.controller.point;
+package com.nhnacademy.shoppingmall.controller.mypage;
 
 
-import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.common.page.Page;
 import com.nhnacademy.shoppingmall.point.domain.PointHistory;
-import com.nhnacademy.shoppingmall.point.repository.impl.PointHistoryRepositoryImpl;
 import com.nhnacademy.shoppingmall.point.service.PointHistoryService;
-import com.nhnacademy.shoppingmall.point.service.impl.PointHistoryServiceImpl;
 import com.nhnacademy.shoppingmall.user.domain.User;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

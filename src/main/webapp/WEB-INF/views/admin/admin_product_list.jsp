@@ -32,7 +32,7 @@
       </tr>
       </thead>
       <tbody>
-      <c:forEach var="item" items="${products}">
+      <c:forEach var="item" items="${productPage.content}">
         <tr>
           <td class="text-center text-muted">${item.id}</td>
 
@@ -87,7 +87,7 @@
         </tr>
       </c:forEach>
 
-      <c:if test="${empty products}">
+      <c:if test="${empty productPage.content}">
         <tr>
           <td colspan="8" class="text-center py-5 text-muted">
             <i class="bi bi-inbox fs-1 d-block mb-2"></i>
@@ -98,4 +98,15 @@
       </tbody>
     </table>
   </div>
+  <c:if test="${totalPages > 0}">
+    <nav aria-label="Page navigation" class="mt-5">
+      <ul class="pagination justify-content-center">
+        <c:forEach begin="1" end="${totalPages}" var="i">
+          <li class="page-item ${currentPage == i ? 'active' : ''}">
+            <a class="page-link" href="/admin/product/list.do?page=${i}">${i}</a>
+          </li>
+        </c:forEach>
+      </ul>
+    </nav>
+  </c:if>
 </div>
