@@ -1,18 +1,26 @@
 package com.nhnacademy.shoppingmall.controller.admin.category;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.category.service.CategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(method = RequestMapping.Method.POST, value = "/admin/category/register.do")
-public class AdminCategoryRegisterController implements BaseController {
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        CategoryService categoryService = (CategoryService) req.getServletContext().getAttribute("categoryService");
-        String categoryName = req.getParameter("categoryName");
+@Controller
+public class AdminCategoryRegisterController {
+    private final CategoryService categoryService;
 
+    @Autowired
+    public AdminCategoryRegisterController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
+    @RequestMapping(value = "/admin/category/register.do", method = RequestMethod.POST)
+    public String execute(@RequestParam("categoryName") String categoryName) {
         if (categoryName != null && !categoryName.trim().isEmpty()) {
             categoryService.addCategory(categoryName.trim());
         }

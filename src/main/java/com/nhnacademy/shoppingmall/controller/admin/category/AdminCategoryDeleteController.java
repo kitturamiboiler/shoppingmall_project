@@ -1,19 +1,26 @@
 package com.nhnacademy.shoppingmall.controller.admin.category;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.category.service.CategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(method = RequestMapping.Method.POST, value = "/admin/category/delete.do")
-public class AdminCategoryDeleteController implements BaseController {
+@Controller
+public class AdminCategoryDeleteController {
+    private final CategoryService categoryService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        CategoryService categoryService = (CategoryService) req.getServletContext().getAttribute("categoryService");
-        String name = req.getParameter("name");
+    @Autowired
+    public AdminCategoryDeleteController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
+    @RequestMapping(value = "/admin/category/delete.do", method = RequestMethod.POST)
+    public String execute(@RequestParam("name") String name) {
         if (name != null && !name.trim().isEmpty()) {
             categoryService.removeCategory(name);
         }

@@ -1,6 +1,5 @@
 package com.nhnacademy.shoppingmall.controller.admin.user;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.order.service.OrderService;
 import com.nhnacademy.shoppingmall.point.repository.impl.PointHistoryRepositoryImpl;
@@ -9,15 +8,27 @@ import com.nhnacademy.shoppingmall.point.service.impl.PointHistoryServiceImpl;
 import com.nhnacademy.shoppingmall.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(method = RequestMapping.Method.POST, value = "/admin/user/delete.do")
-public class AdminUserDeleteController implements BaseController {
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        UserService userService = (UserService) req.getServletContext().getAttribute("userService");
-        PointHistoryService pointHistoryService = (PointHistoryService) req.getServletContext().getAttribute("pointHistoryService");
-        OrderService orderService = (OrderService) req.getServletContext().getAttribute("orderService");
-        String userId = req.getParameter("id");
+@Controller
+public class AdminUserDeleteController {
+    private final UserService userService;
+    private final PointHistoryService pointHistoryService;
+    private final OrderService orderService;
+
+    @Autowired
+    public AdminUserDeleteController(UserService userService, PointHistoryService pointHistoryService, OrderService orderService) {
+        this.userService = userService;
+        this.pointHistoryService = pointHistoryService;
+        this.orderService = orderService;
+    }
+
+    @RequestMapping(value = "/admin/user/delete.do", method = RequestMethod.POST)
+    public String execute(@RequestParam("id") String userId) {
         pointHistoryService.deleteHistory(userId);
         orderService.deleteOrder(userId);
         userService.deleteUser(userId);

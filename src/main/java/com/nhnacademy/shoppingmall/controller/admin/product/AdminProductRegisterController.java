@@ -1,6 +1,5 @@
 package com.nhnacademy.shoppingmall.controller.admin.product;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
@@ -8,20 +7,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.File;
 import java.time.LocalDateTime;
 
 @Slf4j
-@RequestMapping(method = RequestMapping.Method.POST, value = "/admin/product/register.do")
-public class AdminProductRegisterController implements BaseController {
-
+@Controller
+public class AdminProductRegisterController {
+    private final ProductService productService;
     private static final String UPLOAD_DIR = "resources/images/products";
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        ProductService productService = (ProductService) req.getServletContext().getAttribute("productService");
+    @Autowired
+    public AdminProductRegisterController(ProductService productService) {
+        this.productService = productService;
+    }
 
+    @RequestMapping(value = "/admin/product/register.do", method = RequestMethod.POST)
+    public String execute(HttpServletRequest req) {
         try {
             Integer categoryId = Integer.parseInt(req.getParameter("categoryId"));
             String title = req.getParameter("title");

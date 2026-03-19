@@ -1,25 +1,30 @@
 package com.nhnacademy.shoppingmall.controller.admin.product;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.common.page.Page;
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping(method = RequestMapping.Method.GET, value = "/admin/product/list.do")
-public class AdminProductListController implements BaseController {
+@Controller
+public class AdminProductListController {
+    private final ProductService productService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        ProductService productService = (ProductService) req.getServletContext().getAttribute("productService");
-        if (productService == null) {
-            throw new RuntimeException("ProductService를 로드할 수 없습니다.");
-        }
+    @Autowired
+    public AdminProductListController(ProductService productService) {
+        this.productService = productService;
+    }
 
+    @RequestMapping(value = "/admin/product/list.do", method = RequestMethod.GET)
+    public String execute(Model model) {
         Page<Product> productPage = productService.getProductPage(1);
-        req.setAttribute("products", productPage.getContent());
+        model.addAttribute("products", productPage.getContent());
 
         return "admin/admin_product_list";
     }

@@ -1,22 +1,32 @@
 package com.nhnacademy.shoppingmall.controller.admin.user;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import java.util.List;
 
-@RequestMapping(method = RequestMapping.Method.GET, value = "/admin/user/list.do")
-public class AdminUserListController implements BaseController {
+@Controller
+public class AdminUserListController {
+    private final UserService userService;
 
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        UserService userService = (UserService) req.getServletContext().getAttribute("userService");
+    @Autowired
+    public AdminUserListController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @RequestMapping(value = "/admin/user/list.do", method = RequestMethod.GET)
+    public String execute(Model model) {
 
         List<User> userList = userService.getUsers();
-        req.setAttribute("users", userList);
+        model.addAttribute("users", userList);
 
         return "admin/admin_user_list";
     }

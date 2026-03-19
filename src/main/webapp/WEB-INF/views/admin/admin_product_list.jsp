@@ -41,7 +41,7 @@
               <img src="${item.resolvedImageUrl}"
                    alt="product"
                    style="width: 100%; height: 100%; object-fit: cover;"
-                   onerror="this.src='/resources/images/no-image.png'">
+                   onerror="this.src='/resources/no-image.png'">
             </div>
           </td>
 

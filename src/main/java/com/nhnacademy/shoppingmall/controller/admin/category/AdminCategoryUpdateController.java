@@ -1,19 +1,27 @@
 package com.nhnacademy.shoppingmall.controller.admin.category;
 
 import com.nhnacademy.shoppingmall.category.service.CategoryService;
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping(method = RequestMapping.Method.POST, value = "/admin/category/update.do")
-public class AdminCategoryUpdateController implements BaseController {
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        CategoryService categoryService = (CategoryService) req.getServletContext().getAttribute("categoryService");
-        String oldName = req.getParameter("oldName");
-        String newName = req.getParameter("newName");
+@Controller
+public class AdminCategoryUpdateController {
+    private final CategoryService categoryService;
 
+    @Autowired
+    public AdminCategoryUpdateController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
+    @RequestMapping(value = "/admin/category/update.do", method = RequestMethod.POST)
+    public String execute(@RequestParam("oldName") String oldName,
+                          @RequestParam(name = "newName", required = false) String newName) {
         if (newName != null && !newName.trim().isEmpty()) {
             categoryService.modifyCategory(oldName, newName);
         }

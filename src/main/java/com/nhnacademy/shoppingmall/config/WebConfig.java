@@ -45,4 +45,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**/*.do") // .do로 끝나는 모든 요청에 적용
                 .excludePathPatterns("/resources/**"); // 정적 파일은 제외
     }
+
 }

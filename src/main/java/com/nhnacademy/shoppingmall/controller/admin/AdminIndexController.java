@@ -1,14 +1,16 @@
 package com.nhnacademy.shoppingmall.controller.admin;
 
-import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping(method = RequestMapping.Method.GET, value = "/admin/dashboard.do")
-public class AdminIndexController implements BaseController {
-    @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) {
+@Controller
+public class AdminIndexController{
+    @RequestMapping(value = "/admin/dashboard.do", method = RequestMethod.GET)
+    public String execute() {
         return "admin/dashboard";
     }
 }
