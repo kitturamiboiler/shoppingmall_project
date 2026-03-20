@@ -42,7 +42,9 @@
           </td>
           <td class="text-center">${u.userBirth}</td>
           <td class="text-center">
-            <button class="btn btn-sm btn-outline-primary me-1">포인트 수정</button>
+            <a href="/admin/user/point.do?id=${u.userId}" class="btn btn-sm btn-outline-primary me-1">
+              포인트 수정
+            </a>
             <form action="/admin/user/delete.do" method="post" class="d-inline">
               <input type="hidden" name="id" value="${u.userId}">
               <button type="submit" class="btn btn-sm btn-outline-danger"

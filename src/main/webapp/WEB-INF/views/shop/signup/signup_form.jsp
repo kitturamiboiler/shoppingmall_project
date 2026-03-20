@@ -13,22 +13,22 @@
             <% } %>
 
             <div class="form-floating mb-2">
-                <input type="text" name="user_id" class="form-control" id="user_id" placeholder="아이디" required>
+                <input type="text" name="user_id" class="form-control" id="user_id" value = "${user_id}" placeholder="아이디" required>
                 <label for="user_id">아이디</label>
             </div>
 
             <div class="form-floating mb-2">
-                <input type="text" name="user_name" class="form-control" id="user_name" placeholder="이름" required>
+                <input type="text" name="user_name" class="form-control" id="user_name" value = "${user_name}" placeholder="이름" required>
                 <label for="user_name">이름</label>
             </div>
 
             <div class="form-floating mb-2">
-                <input type="password" name="user_password" class="form-control" id="user_password" placeholder="패스워드" required>
+                <input type="password" name="user_password" class="form-control" id="user_password" value = "${user_password}" placeholder="패스워드" required>
                 <label for="user_password">패스워드</label>
             </div>
 
             <div class="form-floating mb-2">
-                <input type="text" name="user_birth" class="form-control" id="user_birth"
+                <input type="text" name="user_birth" class="form-control" id="user_birth" value = "${user_birth}"
                        placeholder="생년월일(8자리)" maxlength="8" required
                        pattern="\d{8}" title="8자리 숫자로 입력해주세요 (예: 19950101)">
                 <label for="user_birth">생년월일 (8자리: 19950101)</label>

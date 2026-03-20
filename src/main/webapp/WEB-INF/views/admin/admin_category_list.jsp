@@ -11,6 +11,12 @@
 <div class="container-fluid py-2">
     <h4 class="fw-bold mb-4"><i class="bi bi-tags me-2"></i>카테고리 관리</h4>
 
+    <% if (request.getAttribute("errorMessage") != null) { %>
+    <div class="alert alert-danger p-2" style="font-size: 0.9rem;">
+        <%= request.getAttribute("errorMessage") %>
+    </div>
+    <% } %>
+
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form action="/admin/category/register.do" method="post" class="row g-3 align-items-center">

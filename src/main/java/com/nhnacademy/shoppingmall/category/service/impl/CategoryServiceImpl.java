@@ -26,6 +26,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void addCategory(String name) {
+        validateCategoryName(name);
+        if(categoryRepository.findAll().stream()
+                .anyMatch(category -> category.getCategoryName().equals(name))){
+            throw new IllegalArgumentException("이미 존재하는 카테고리 이름입니다.");
+        }
         categoryRepository.save(name);
     }
     @Override
@@ -36,15 +41,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void modifyCategory(String oldName, String newName) {
-        if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("카테고리 이름은 비어있을수 없습니다.");
-        }
-        boolean isDuplicate = categoryRepository.findAll().stream()
-                .anyMatch(category -> category.getCategoryName().equals(newName));
-
-        if (isDuplicate){
-            throw new IllegalStateException("이미 존재하는 카테고리 이름입니다.");
+        validateCategoryName(newName);
+        if(categoryRepository.findAll().stream()
+                .anyMatch(category -> category.getCategoryName().equals(newName))){
+            throw new IllegalArgumentException("이미 존재하는 카테고리 이름입니다.");
         }
         categoryRepository.update(oldName, newName);
+    }
+
+    private void validateCategoryName(String categoryName){
+        if(categoryName == null || categoryName.isBlank()){
+            throw new IllegalArgumentException("카테고리 이름은 공백일 수 없습니다.");
+        }else if(categoryName.contains(" ")){
+            throw new IllegalArgumentException("카테고리 이름은 공백을 포함할 수 없습니다.");
+        }else if(categoryName.length() > 20){
+            throw new IllegalArgumentException("카테고리 이름은 20자 이내여야 합니다.");
+        }
     }
 }

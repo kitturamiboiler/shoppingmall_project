@@ -1,5 +1,9 @@
 package com.nhnacademy.shoppingmall.user.domain;
 
+import com.mysql.cj.util.StringUtils;
+
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -26,6 +30,17 @@ public class User {
         this.userPoint = userPoint;
         this.createdAt = createdAt;
         this.latestLoginAt=latestLoginAt;
+    }
+
+    public User(User user){
+        this.userId = user.userId;
+        this.userName = user.userName;
+        this.userPassword = user.userPassword;
+        this.userBirth = user.userBirth;
+        this.userAuth = user.userAuth;
+        this.userPoint = user.userPoint;
+        this.createdAt = user.createdAt;
+        this.latestLoginAt= user.latestLoginAt;
     }
 
     public String getUserId() {
@@ -79,6 +94,7 @@ public class User {
     public void setUserPoint(int userPoint) {
         this.userPoint = userPoint;
     }
+
 
     @Override
     public boolean equals(Object o) {

@@ -37,12 +37,19 @@ public class EditAccountActionController {
         if(user == null){
             model.addAttribute("message", "세션이 만료되었습니다.");
         }else {
-            user.setUserName(editName);
-            user.setUserPassword(editPassword);
-            user.setUserBirth(editBirth);
+            User editUser = new User(user);
+            editUser.setUserName(editName);
+            editUser.setUserPassword(editPassword);
+            editUser.setUserBirth(editBirth);
 
-            userService.updateUser(user);
-            session.setAttribute("user", user);
+            try {
+                userService.updateUser(editUser);
+            }catch (Exception e){
+                model.addAttribute("errorMessage", e.getMessage());
+                model.addAttribute("editUser", editUser);
+                return "shop/mypage/edit_account";
+            }
+            session.setAttribute("user", editUser);
             model.addAttribute("message", "회원 정보 수정 완료!");
         }
 

@@ -23,6 +23,8 @@ public class PasswordCheckActionController{
             model.addAttribute("message", "세션이 만료되었습니다.");
             return "common/message";
         }else if(user.getUserPassword().equals(inputPw)){
+            User editUser = new User((User)session.getAttribute("user"));
+            model.addAttribute("editUser", editUser);
             return "shop/mypage/edit_account";
         }else {
             model.addAttribute("errorMessage", "옳지 않은 비밀번호 입니다 다시 입력해주세요.");

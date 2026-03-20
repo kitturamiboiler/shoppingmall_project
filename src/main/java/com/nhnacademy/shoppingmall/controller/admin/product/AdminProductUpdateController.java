@@ -9,6 +9,7 @@ import jakarta.servlet.http.Part;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -25,7 +26,7 @@ public class AdminProductUpdateController {
     }
 
     @RequestMapping(value = "/admin/product/update.do", method = RequestMethod.POST)
-    public String execute(HttpServletRequest req) {
+    public String execute(HttpServletRequest req, Model model) {
 
         try {
             int id = Integer.parseInt(req.getParameter("id"));
@@ -36,6 +37,7 @@ public class AdminProductUpdateController {
             String vendor = req.getParameter("vendor");
             String ean = req.getParameter("ean");
             Product originalProduct = productService.getProduct(id);
+            model.addAttribute("product", originalProduct);
 
             Part filePart = req.getPart("productImage");
             if (filePart != null && filePart.getSize() > 0) {
@@ -53,12 +55,12 @@ public class AdminProductUpdateController {
                     vendor,
                     originalProduct.getCreatedAt()
             );
-
             productService.updateProduct(updatedProduct);
 
         } catch (Exception e) {
             log.error("상품 수정 중 오류 발생: {}", e.getMessage());
-            throw new RuntimeException("상품 수정 실패", e);
+            model.addAttribute("errorMessage", "상품 수정 실패: " + e.getMessage());
+            return "admin/admin_product_update_form";
         }
 
         return "redirect:/admin/product/list.do";

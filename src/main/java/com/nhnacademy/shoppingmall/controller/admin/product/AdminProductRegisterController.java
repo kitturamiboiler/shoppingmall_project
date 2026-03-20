@@ -1,5 +1,7 @@
 package com.nhnacademy.shoppingmall.controller.admin.product;
 
+import com.nhnacademy.shoppingmall.category.domain.Category;
+import com.nhnacademy.shoppingmall.category.service.CategoryService;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
@@ -9,30 +11,34 @@ import jakarta.servlet.http.Part;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Controller
 public class AdminProductRegisterController {
     private final ProductService productService;
+    private final CategoryService categoryService;
     private static final String UPLOAD_DIR = "resources/images/products";
 
     @Autowired
-    public AdminProductRegisterController(ProductService productService) {
+    public AdminProductRegisterController(ProductService productService, CategoryService categoryService) {
         this.productService = productService;
+        this.categoryService = categoryService;
     }
 
     @RequestMapping(value = "/admin/product/register.do", method = RequestMethod.POST)
-    public String execute(HttpServletRequest req) {
+    public String execute(HttpServletRequest req, Model model) {
         try {
             Integer categoryId = Integer.parseInt(req.getParameter("categoryId"));
             String title = req.getParameter("title");
             int price = Integer.parseInt(req.getParameter("price"));
-            Integer quantity = Integer.parseInt(req.getParameter("quantity"));
+            int quantity = Integer.parseInt(req.getParameter("quantity"));
             String vendor = req.getParameter("vendor");
             String ean = req.getParameter("ean");
 
@@ -47,6 +53,7 @@ public class AdminProductRegisterController {
                     vendor,
                     LocalDateTime.now()
             );
+            model.addAttribute("product", product);
 
             productService.saveProduct(product);
 
@@ -63,7 +70,10 @@ public class AdminProductRegisterController {
 
         } catch (Exception e) {
             log.error("상품 등록 실패: {}", e.getMessage());
-            throw new RuntimeException("상품 등록 중 오류 발생: " + e.getMessage(), e);
+            model.addAttribute("errorMessage", "상품 등록 실패: " + e.getMessage());
+            List<Category> categoryList = categoryService.getCategoryList();
+            model.addAttribute("categories", categoryList);
+            return "admin/admin_product_register_form";
         }
 
         return "redirect:/admin/product/list.do";

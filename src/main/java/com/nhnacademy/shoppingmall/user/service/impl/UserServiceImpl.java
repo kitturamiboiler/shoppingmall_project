@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +39,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void saveUser(User user) {
         //todo#4-2 회원등록
+        validateUserId(user.getUserId());
+        validateUserName(user.getUserName());
+        validateUserPw(user.getUserPassword());
+        validateUserBirth(user.getUserBirth());
         if (userRepository.countByUserId(user.getUserId()) >0) {
             throw new UserAlreadyExistsException(user.getUserId());
         }
@@ -50,6 +56,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.countByUserId(user.getUserId()) == 0 ){
             throw new UserNotFoundException(user.getUserId());
         }
+        validateUserName(user.getUserName());
+        validateUserPw(user.getUserPassword());
+        validateUserBirth(user.getUserBirth());
         userRepository.update(user);
     }
 
@@ -92,5 +101,46 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    private void validateUserId(String userId){
+        if(userId.contains(" ")){
+            throw new IllegalArgumentException("유저 아이디는 공백이 포함될 수 없습니다.");
+        }else if(userId.isEmpty()){
+            throw new IllegalArgumentException("유저 아이디는 공백일 수 없습니다.");
+        }
+    }
+
+    private void validateUserPw(String userPw){
+        if(userPw.contains(" ")){
+            throw new IllegalArgumentException("유저 비밀번호는 공백이 포함될 수 없습니다.");
+        }else if(userPw.isEmpty()){
+            throw new IllegalArgumentException("유저 비밀번호는 공백일 수 없습니다.");
+        }
+    }
+
+    private void validateUserName(String userName){
+        if(userName.contains(" ")){
+            throw new IllegalArgumentException("유저 이름은 공백이 포함될 수 없습니다.");
+        }else if(userName.isEmpty()){
+            throw new IllegalArgumentException("유저 이름은 공백일 수 없습니다.");
+        }
+    }
+
+    private void validateUserBirth(String userBirth){
+        int year = Integer.parseInt(userBirth.substring(0,4));
+        int month = Integer.parseInt(userBirth.substring(4,6));
+        int day = Integer.parseInt(userBirth.substring(6,8));
+
+        try {
+            LocalDate birth = LocalDate.of(year, month, day);
+            LocalDate today = LocalDate.now();
+
+            if(birth.isAfter(today)){
+                throw new IllegalArgumentException("생년월일은 현재보다 과거여야 합니다.");
+            }
+        }catch (DateTimeException e){
+            throw new IllegalArgumentException("유효하지않는 날짜 형식입니다.");
+        }
     }
 }

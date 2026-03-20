@@ -1,5 +1,6 @@
 package com.nhnacademy.shoppingmall.product.service.impl;
 
+import com.mysql.cj.util.StringUtils;
 import com.nhnacademy.shoppingmall.common.page.Page;
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.exception.NotEnoughStockException;
@@ -29,7 +30,7 @@ public class ProductServiceImpl implements ProductService {
     public Product getProduct(int id) {
         Product product = productRepository.findById(id);
         if (Objects.isNull(product)) {
-            throw new RuntimeException("조회된 상품이 없습니다.");
+            throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
         }
         return product;
     }
@@ -53,6 +54,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void saveProduct(Product product) {
+        validateTitle(product.getTitle());
+        validateVendor(product.getVendor());
+        validatePrice(product.getPrice());
+        validateQuantity(product.getQuantity());
         int result = productRepository.save(product);
         if (result < 1) {
             throw new RuntimeException("상품 등록 실패");
@@ -61,6 +66,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void updateProduct(Product product) {
+        validateTitle(product.getTitle());
+        validateVendor(product.getVendor());
+        validatePrice(product.getPrice());
+        validateQuantity(product.getQuantity());
         if (Objects.isNull(product.getId())) {
             throw new RuntimeException("수정할 상품의 ID가 없습니다.");
         }
@@ -108,5 +117,29 @@ public class ProductServiceImpl implements ProductService {
     public void updateStock(int productId, int quantity) {
         productRepository.updateStock(productId, quantity);
 
+    }
+
+    private void validateTitle(String title){
+        if(title == null || title.isBlank()){
+            throw new IllegalArgumentException("상품명은 필수입니다.");
+        }
+    }
+
+    private void validateVendor(String vendor){
+        if(vendor == null || vendor.isBlank()){
+            throw new IllegalArgumentException("제조사명은 필수입니다.");
+        }
+    }
+
+    private void validatePrice(int price){
+        if(price < 0){
+            throw new IllegalArgumentException("가격은 0보다 작을 수 없습니다.");
+        }
+    }
+
+    private void validateQuantity(int quantity){
+        if(quantity < 0){
+            throw new IllegalArgumentException("재고는 0보다 작을 수 없습니다.");
+        }
     }
 }

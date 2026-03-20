@@ -42,6 +42,10 @@ public class SignupPostController{
             userService.saveUser(user);
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("user_id", userId);
+            model.addAttribute("user_name", userName);
+            model.addAttribute("user_password", userPassword);
+            model.addAttribute("user_birth", userBirth);
             return "shop/signup/signup_form";
         }
 

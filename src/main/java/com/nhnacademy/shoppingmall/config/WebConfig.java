@@ -3,11 +3,10 @@ package com.nhnacademy.shoppingmall.config;
 import com.nhnacademy.shoppingmall.RootBase;
 import com.nhnacademy.shoppingmall.controller.LayoutInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -46,4 +45,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/resources/**"); // 정적 파일은 제외
     }
 
+    @Bean
+    public MultipartResolver multipartResolver() {
+        return new StandardServletMultipartResolver();
+    }
 }

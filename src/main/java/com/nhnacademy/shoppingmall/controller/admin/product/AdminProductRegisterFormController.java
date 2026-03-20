@@ -26,6 +26,6 @@ public class AdminProductRegisterFormController {
     public String execute(Model model) {
         List<Category> categoryList = categoryService.getCategoryList();
         model.addAttribute("categories", categoryList);
-        return "admin/admin_product_form";
+        return "admin/admin_product_register_form";
     }
 }
